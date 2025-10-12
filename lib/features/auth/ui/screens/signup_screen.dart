@@ -1,79 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
+import 'package:match_track/features/auth/ui/widgets/signup_form.dart';
+import 'package:match_track/core/presentation/app_theme.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return SignupScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.darkText,
+      body: SafeArea(
+        child: BlocProvider(
+          create: (_) => SignupBloc(),
+          child: const SignupView(),
+        ),
+      ),
+    );
   }
 }
 
-class SignupScreenState extends State<SignupScreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
+class SignupView extends StatelessWidget {
+  const SignupView({super.key});
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  Widget content() => Column(
-    children: [
-      TextField(
-        controller: emailController,
-        decoration: InputDecoration(label: Text("Correo electronico")),
-      ),
-      TextField(
-        controller: nameController,
-        decoration: InputDecoration(label: Text("Nombre")),
-      ),
-      TextField(
-        controller: passwordController,
-        decoration: InputDecoration(label: Text("Constraseña")),
-        obscureText: true,
-      ),
-      submmitButton(),
-    ],
-  );
-
-  Widget submmitButton() => BlocBuilder<SignupBloc, SignupState>(
-    builder: (context, state) => ElevatedButton(
-      onPressed: () {
-        context.read<SignupBloc>().add(
-          SubmmitSignupEvent(
-            name: nameController.text,
-            email: emailController.text,
-            password: passwordController.text,
-          ),
-        );
-      },
-      child: Text("Crear usuario"),
-    ),
-  );
-
-  Widget dynamicContent() => BlocBuilder<SignupBloc, SignupState>(
-    builder: (context, state) {
+  Widget build(BuildContext context) {
+    return BlocBuilder<SignupBloc, SignupState>(
+        builder: (context, state) {
       if (state is SignupIdleState) {
-        return content();
+        return SignupForm();
       } else if (state is SignupLoadingState) {
         return CircularProgressIndicator();
       } else if (state is SignupSuccessState) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          //Navigator.pushReplacementNamed(context, '/profile');
+          _showSnackBar(context, 'Usuario creado exitosamente', false);
+          Navigator.pushReplacementNamed(context, '/profile');
         });
         return SizedBox.shrink();
-      } else {
+      } else if (state is SignupErrorState) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showSnackBar(context, state.errorMessage ?? "Error desconocido", true);
+          Navigator.pushReplacementNamed(context, '/signup');
+        });
+        return SizedBox.shrink();
+      }else{
         return SizedBox.shrink();
       }
     },
-  );
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: SafeArea(child: dynamicContent()));
+  
+  
+
+  void _showSnackBar(BuildContext context, String message, bool isError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? AppColors.error : AppColors.success,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }
