@@ -204,7 +204,10 @@ class ProfileContent extends StatelessWidget {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context),
+                                    onPressed: () {
+                                      print('Cerrar sesion cancelado');
+                                      Navigator.pop(context);
+                                    },
                                     child: const Text(
                                       'Cancelar',
                                       style: TextStyle(
@@ -214,6 +217,7 @@ class ProfileContent extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
+                                      print('Cerrar sesión confirmado');
                                       Navigator.pop(context);
                                       // Aquí puedes agregar la lógica real de cierre de sesión
                                       // Ejemplo: Navigator.pushReplacementNamed(context, '/login');
