@@ -1,6 +1,5 @@
-// lib/features/profile/presentation/pages/profile_page.dart
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/header.dart';
+import '../../../../core/widgets/app_header.dart';
 import '../../../../core/widgets/nav_bar.dart';
 import '../widgets/profile_content.dart';
 
@@ -18,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomHeader(title: 'Perfil'),
-      body: const SafeArea(child: PerfilContent()),
+      body: const SafeArea(child: ProfileContent()),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
