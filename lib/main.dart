@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
 import 'package:match_track/features/auth/ui/screens/signup_screen.dart';
-import 'features/auth/ui/screens/login_screen.dart';
+import 'package:match_track/features/auth/ui/screens/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
