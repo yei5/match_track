@@ -24,7 +24,11 @@ class SignupHeader extends StatelessWidget {
           const SizedBox(height: 10),
           const Text(
             'Regístrate y forma parte de la comunidad.',
-            style: TextStyle(color: AppColors.lightBackground, fontSize: 16, fontWeight: FontWeight.bold ),
+            style: TextStyle(
+              color: AppColors.lightBackground,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

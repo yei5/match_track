@@ -51,7 +51,7 @@ class _SignupFormState extends State<SignupForm> {
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Por favor, ingresa tu nombre completo';
-                      }else if (value.contains(RegExp(r'[0-9]'))) {
+                      } else if (value.contains(RegExp(r'[0-9]'))) {
                         return 'El nombre no debe contener números';
                       }
                       return null;
@@ -95,12 +95,12 @@ class _SignupFormState extends State<SignupForm> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         context.read<SignupBloc>().add(
-                              SubmmitSignupEvent(
-                                name: nameController.text.trim(),
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                              ),
-                            );
+                          SubmmitSignupEvent(
+                            name: nameController.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                          ),
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -119,7 +119,7 @@ class _SignupFormState extends State<SignupForm> {
                   const SizedBox(height: 28),
                   RedirectToLogin(
                     onLoginTap: () {
-                      //Navigator.pushNamed(context, '/login');
+                      Navigator.pushNamed(context, '/login');
                     },
                   ),
                   const SizedBox(height: 28),
