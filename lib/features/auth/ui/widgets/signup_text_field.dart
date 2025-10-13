@@ -38,7 +38,7 @@ class SignupTextField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.grey[600]),
+            prefixIcon: Icon(icon, color: AppColors.textSecondary),
             labelText: label,
             labelStyle: const TextStyle(
               fontWeight: FontWeight.w100,
@@ -49,7 +49,7 @@ class SignupTextField extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Colors.black26),
+              borderSide: const BorderSide(color: AppColors.darkText),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

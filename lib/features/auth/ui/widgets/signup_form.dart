@@ -94,7 +94,6 @@ class _SignupFormState extends State<SignupForm> {
                   SignupButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // ✅ Si los campos son válidos, dispara el evento al Bloc
                         context.read<SignupBloc>().add(
                               SubmmitSignupEvent(
                                 name: nameController.text.trim(),
@@ -103,14 +102,13 @@ class _SignupFormState extends State<SignupForm> {
                               ),
                             );
                       } else {
-                        // ❌ Si hay errores, muestra un SnackBar
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text(
-                              "Por favor corrige los errores antes de continuar.",
-                              style: TextStyle(color: Colors.white),
+                              "Por favor llene todos los campos correctamente",
+                              style: TextStyle(color: AppColors.background),
                             ),
-                            backgroundColor: Colors.red.shade700,
+                            backgroundColor: AppColors.error,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );

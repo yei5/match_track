@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
 import 'package:match_track/features/auth/ui/widgets/signup_form.dart';
 import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -35,6 +36,7 @@ class SignupView extends StatelessWidget {
       } else if (state is SignupSuccessState) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showSnackBar(context, 'Usuario creado exitosamente', false);
+          print(Supabase.instance.client.auth.currentUser);
           Navigator.pushReplacementNamed(context, '/profile');
         });
         return SizedBox.shrink();
@@ -57,7 +59,7 @@ class SignupView extends StatelessWidget {
   void _showSnackBar(BuildContext context, String message, bool isError) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: const TextStyle(color: Colors.white)),
+        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
         behavior: SnackBarBehavior.floating,
         backgroundColor: isError ? AppColors.error : AppColors.success,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
