@@ -36,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
           );
           // 🔹 Navega a la pantalla principal
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacementNamed(context, '/profile');
         } else if (state is LoginFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

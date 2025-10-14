@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/signup': (_) =>
             BlocProvider(create: (_) => SignupBloc(), child: SignupScreen()),
         '/login': (_) => const LoginScreen(),
+        '/profile': (_) => const ProfilePage(),
       },
     );
   }

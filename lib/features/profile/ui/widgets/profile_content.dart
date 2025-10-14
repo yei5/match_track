@@ -219,8 +219,10 @@ class ProfileContent extends StatelessWidget {
                                     onPressed: () {
                                       print('Cerrar sesión confirmado');
                                       Navigator.pop(context);
-                                      // Aquí puedes agregar la lógica real de cierre de sesión
-                                      // Ejemplo: Navigator.pushReplacementNamed(context, '/login');
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/login',
+                                      );
                                     },
                                     child: const Text(
                                       'Cerrar sesión',

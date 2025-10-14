@@ -62,7 +62,7 @@ class SignupView extends StatelessWidget {
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.lightBackground),
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: isError ? AppColors.error : AppColors.success,
