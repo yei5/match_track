@@ -1,16 +1,14 @@
 # match_track
 
-A new Flutter project.
+Esta primera entrega implementa un flujo completo de autenticacion usando las pantallas de **login**, **register** y **profile**.
 
-## Getting Started
+Al ejecutar el proyecto se debe crear un archivo .env que contenga las credenciales de acceso a supabase, para fines de la entrega se ponen dichas credenciales en este documento.
 
-This project is a starting point for a Flutter application.
+```bash
+SUPABASE_URL=https://hxwhndtlhnkbxnjbrpud.supabase.co
+SUPABASE_ANON_KEY=sb_publishable_CScb8w6Oxzp1Dweg5OkX9g_bJS9tylZ
+```
 
-A few resources to get you started if this is your first Flutter project:
+El flujo de la aplicacion es el siguiente:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Al ejecutar flutter run despues de haber instalado las dependencias necesarias la aplicacion mostrara la pantalla de registro, registre un usuario nuevo o navegue hacia la pantalla de login para usar uno exitente. Si existe algun durante alguno de estos procesos, la aplicacion lo notificara y se quedara en dichas pantallas. Si el proceso es exitoso sera redirigido a la pantalla de profile donde podra ver un resumen de la sesion activa asi como alguna informacion de partidos y equipos situada alli como placeholder para ser implementada de forma real en una posterior entrega.
