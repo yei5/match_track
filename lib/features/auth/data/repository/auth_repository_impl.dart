@@ -19,6 +19,7 @@ class AuthRepositoryImpl extends AuthRepository {
     }
   }
 
+  @override
   Future<User?> signUp(String email, String password) async {
     try {
       final res = await _client.auth.signUp(email: email, password: password);
