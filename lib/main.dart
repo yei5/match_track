@@ -1,8 +1,22 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'features/profile/ui/screens/profile_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
+import 'package:match_track/features/auth/ui/screens/signup_screen.dart';
+import 'package:match_track/features/auth/ui/screens/login_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+  final supabaseUrl = dotenv.env['SUPABASE_URL']!;
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+
   runApp(const MyApp());
 }
 
@@ -12,21 +26,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App de Perfil',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-        ),
+      title: 'MatchTrack',
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const ProfilePage(),
-      debugShowCheckedModeBanner: false,
+      initialRoute: '/signup',
+      routes: {
+        '/signup': (_) =>
+            BlocProvider(create: (_) => SignupBloc(), child: SignupScreen()),
+        '/login': (_) => const LoginScreen(),
+      },
     );
   }
 }
