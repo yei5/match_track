@@ -17,33 +17,26 @@ class _LoginFormState extends State<LoginForm> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String? emailErrorMessage;
+  String? passwordErrorMessage;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
-        if (state is LoginLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Iniciando sesión...'),
-              duration: Duration(seconds: 1),
-            ),
-          );
-        } else if (state is LoginSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Inicio de sesión exitoso'),
-              backgroundColor: AppColors.primary,
-            ),
-          );
-          // 🔹 Navega a la pantalla principal
+        if (state is LoginSuccess) {
           Navigator.pushReplacementNamed(context, '/profile');
         } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          setState(() {
+            // Asigna el error al campo correcto según el field del estado
+            emailErrorMessage = state.field == LoginErrorField.email
+                ? state.message
+                : null;
+            passwordErrorMessage = state.field == LoginErrorField.password
+                ? state.message
+                : null;
+          });
+          _formKey.currentState!.validate(); // fuerza revalidación
         }
       },
       child: SingleChildScrollView(
@@ -68,6 +61,7 @@ class _LoginFormState extends State<LoginForm> {
                   label: 'Ingresa tu correo',
                   icon: Icons.email_outlined,
                   validator: (value) {
+                    if (emailErrorMessage != null) return emailErrorMessage;
                     if (value == null || value.trim().isEmpty) {
                       return 'Por favor, ingresa tu correo electrónico';
                     }
@@ -77,6 +71,7 @@ class _LoginFormState extends State<LoginForm> {
                     }
                     return null;
                   },
+                  errorText: emailErrorMessage,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
@@ -86,31 +81,27 @@ class _LoginFormState extends State<LoginForm> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                   validator: (value) {
+                    if (passwordErrorMessage != null)
+                      return passwordErrorMessage;
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingresa tu contraseña';
                     }
                     return null;
                   },
+                  errorText: passwordErrorMessage,
                 ),
                 const SizedBox(height: 24),
                 LoginButton(
                   onPressed: () {
+                    setState(() {
+                      emailErrorMessage = null;
+                      passwordErrorMessage = null;
+                    });
                     if (_formKey.currentState!.validate()) {
                       context.read<LoginBloc>().add(
                         LoginSubmitted(
                           emailController.text.trim(),
                           passwordController.text.trim(),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Por favor llene todos los campos correctamente",
-                            style: TextStyle(color: AppColors.background),
-                          ),
-                          backgroundColor: AppColors.error,
-                          behavior: SnackBarBehavior.floating,
                         ),
                       );
                     }
@@ -139,6 +130,7 @@ class _LoginFormState extends State<LoginForm> {
     required IconData icon,
     bool obscureText = false,
     String? Function(String?)? validator,
+    String? errorText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,6 +168,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
+            errorText: errorText,
           ),
         ),
       ],
