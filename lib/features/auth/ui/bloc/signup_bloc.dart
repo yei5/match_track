@@ -4,8 +4,7 @@ import 'package:match_track/core/domain/model/profile.dart';
 import 'package:match_track/features/auth/domain/usecases/signup_usecase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-abstract class SignupEvent {
-}
+abstract class SignupEvent {}
 
 class SubmmitSignupEvent extends SignupEvent {
   String name;
@@ -54,17 +53,29 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ),
         event.password,
       );
+      final supabase = Supabase.instance.client;
+      final user = supabase.auth.currentUser;
+
+      if (user != null) {
+        await supabase.from('profiles').insert({
+          'user_id': user.id,
+          'name': event.name,
+          'email': event.email,
+        });
+      }
+
       emit(SignupSuccessState());
     } on Exception catch (e) {
-      if(e is AuthApiException ){
+      if (e is AuthApiException) {
         print(e.message);
         print(e.code.toString());
         String message = "";
-        if(e.code == "email_invalid_address" || e.code == "validation_failed"){
+        if (e.code == "email_invalid_address" ||
+            e.code == "validation_failed") {
           message = "El correo electronico no es valido.";
-        }else if(e.code == "user_already_exists"){
+        } else if (e.code == "user_already_exists") {
           message = "El correo electronico ya esta en uso.";
-        }else{
+        } else {
           message = e.message;
         }
         emit(SignupErrorState(errorMessage: message));

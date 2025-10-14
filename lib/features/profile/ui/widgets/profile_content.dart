@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_team_card.dart';
 import '../../../../core/widgets/custom_tournament_card.dart';
 import '../../../../core/widgets/custom_button.dart';
 
-class ProfileContent extends StatelessWidget {
+class ProfileContent extends StatefulWidget {
   const ProfileContent({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileContent> createState() => _ProfileContentState();
+}
+
+class _ProfileContentState extends State<ProfileContent> {
+  final supabase = Supabase.instance.client;
+  String? name;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    final response = await supabase
+        .from('profiles')
+        .select('name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    setState(() {
+      name = response?['name'];
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +104,11 @@ class ProfileContent extends StatelessWidget {
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Alexander Rueda',
-                          style: TextStyle(
+                        Text(
+                          isLoading
+                              ? 'Cargando...'
+                              : (name ?? 'Usuario desconocido'),
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -123,8 +162,6 @@ class ProfileContent extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 0),
                             child: TextButton(
                               onPressed: () {
-                                // Aquí irá la navegación futura
-                                // Navigator.pushNamed(context, '/teams');
                                 print('Ver todos los equipos');
                               },
                               child: const Text(
@@ -158,8 +195,6 @@ class ProfileContent extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 0),
                             child: TextButton(
                               onPressed: () {
-                                // Aquí irá la navegación futura
-                                // Navigator.pushNamed(context, '/tournaments');
                                 print('Ver todos los torneos');
                               },
                               child: const Text(
@@ -205,7 +240,6 @@ class ProfileContent extends StatelessWidget {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      print('Cerrar sesion cancelado');
                                       Navigator.pop(context);
                                     },
                                     child: const Text(
@@ -217,7 +251,6 @@ class ProfileContent extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      print('Cerrar sesión confirmado');
                                       Navigator.pop(context);
                                       Navigator.pushReplacementNamed(
                                         context,
@@ -232,7 +265,6 @@ class ProfileContent extends StatelessWidget {
                                 ],
                               ),
                             );
-                            print('Popup abierto');
                           },
                         ),
                       ],
