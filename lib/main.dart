@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  // try load .env if present (not mandatory)
+  try {
+    await dotenv.load();
+  } catch (_) {
+    // ignore
+  }
+
   runApp(const MyApp());
 }
 
