@@ -4,6 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
+echo "==> Ensure flutter is available"
+if ! command -v flutter >/dev/null 2>&1; then
+  echo "flutter not found. Running local installer (no sudo)..."
+  ./scripts/install_flutter_local.sh
+  export PATH="$HOME/flutter-sdk/bin:$PATH"
+fi
+
 echo "==> Running flutter pub get"
 flutter pub get
 
@@ -15,7 +22,7 @@ else
 fi
 
 echo "==> Starting app on web-server at http://0.0.0.0:8080"
-echo "Open https://localhost:8080 from your browser (Codespaces forwards the port)."
+echo "Open the forwarded port 8080 in Codespaces or http://localhost:8080 locally."
 
 # Run web-server; will block until terminated
 flutter run -d web-server --web-hostname=0.0.0.0 --web-port=8080
