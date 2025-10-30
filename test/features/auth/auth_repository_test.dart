@@ -4,7 +4,7 @@ import 'package:match_track/features/auth/data/repository/auth_repository.dart';
 import 'package:match_track/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:match_track/features/auth/data/source/supabase_auth_remote.dart';
 
-class _FakeRemote implements SupabaseAuthRemote {
+class _FakeRemote extends SupabaseAuthRemote {
   _FakeRemote(): super(supabaseUrl: '', anonKey: '');
 
   bool sent = false;

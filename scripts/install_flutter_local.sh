@@ -5,10 +5,29 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 FLUTTER_DIR="$HOME/flutter-sdk"
 
 echo "Installing Flutter (stable) into $FLUTTER_DIR (no sudo)..."
+
+# Detect musl (Alpine) vs glibc. Flutter prebuilt binaries expect glibc.
+if command -v ldd >/dev/null 2>&1; then
+  if ldd --version 2>&1 | grep -iq musl; then
+    cat <<'MSG'
+ERROR: This environment appears to be Alpine / musl-based.
+The prebuilt Flutter and Dart binaries require a glibc-based system (Debian/Ubuntu/CentOS).
+Common symptom: "/cache/dart-sdk/bin/dart: cannot execute: required file not found".
+
+Recommended options:
+  - Rebuild the devcontainer using the project's `.devcontainer/Dockerfile` (Ubuntu 22.04) so Flutter works out-of-the-box.
+  - Or install a glibc compatibility layer (e.g. gcompat) on Alpine — this is advanced and not guaranteed.
+
+Run the devcontainer rebuild in Codespaces or open via "Reopen in Container" in VS Code.
+MSG
+    exit 1
+  fi
+fi
+
 if [ -d "$FLUTTER_DIR" ]; then
   echo "Flutter already present at $FLUTTER_DIR"
 else
-  git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_DIR"
+  git clone --depth 1 https://github.com/flutter/flutter.git -b stable "$FLUTTER_DIR"
 fi
 
 export PATH="$FLUTTER_DIR/bin:$PATH"

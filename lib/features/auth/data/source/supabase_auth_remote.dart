@@ -17,8 +17,7 @@ class SupabaseAuthRemote {
       headers: {
         'Content-Type': 'application/json',
         'apikey': anonKey,
-        'Authorization': 'Bearer '
-            '$anonKey',
+        'Authorization': 'Bearer $anonKey',
       },
       body: jsonEncode({'email': email}),
     );
@@ -39,10 +38,9 @@ class SupabaseAuthRemote {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'apikey': anonKey,
-        'Authorization': 'Bearer '
-            '$anonKey',
+        'Authorization': 'Bearer $anonKey',
       },
-      body: 'email=' + Uri.encodeQueryComponent(email) + '&password=' + Uri.encodeQueryComponent(password),
+      body: 'email=${Uri.encodeQueryComponent(email)}&password=${Uri.encodeQueryComponent(password)}',
     );
 
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
