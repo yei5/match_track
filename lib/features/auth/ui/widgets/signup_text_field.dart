@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class SignupTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -28,7 +28,7 @@ class SignupTextField extends StatelessWidget {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppColors.darkText
+color: AppColors.textPrimary
             
           ),
         ),
@@ -45,11 +45,11 @@ class SignupTextField extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
             filled: true,
-            fillColor: AppColors.lightBackground,
+            fillColor: AppColors.surface,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.darkText),
+              borderSide: const BorderSide(color: AppColors.textPrimary),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

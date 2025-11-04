@@ -67,8 +67,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(SignupSuccessState());
     } on Exception catch (e) {
       if (e is AuthApiException) {
-        print(e.message);
-        print(e.code.toString());
         String message = "";
         if (e.code == "email_invalid_address" ||
             e.code == "validation_failed") {

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
 import 'package:match_track/features/auth/ui/widgets/signup_form.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -11,7 +10,7 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkText,
+      backgroundColor: AppColors.textPrimary,
       body: SafeArea(
         child: BlocProvider(
           create: (_) => SignupBloc(),
@@ -36,7 +35,6 @@ class SignupView extends StatelessWidget {
         } else if (state is SignupSuccessState) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _showSnackBar(context, 'Usuario creado exitosamente', false);
-            print(Supabase.instance.client.auth.currentUser);
             Navigator.pushReplacementNamed(context, '/profile');
           });
           return SizedBox.shrink();
@@ -62,7 +60,7 @@ class SignupView extends StatelessWidget {
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(color: AppColors.lightBackground),
+          style: const TextStyle(color: AppColors.surface),
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: isError ? AppColors.error : AppColors.success,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 import 'package:match_track/features/auth/ui/bloc/login_bloc.dart';
 import 'package:match_track/features/auth/ui/widgets/login_button.dart';
 import 'package:match_track/features/auth/ui/widgets/redirect_to_signup.dart';
@@ -139,7 +139,7 @@ class _LoginFormState extends State<LoginForm> {
           title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppColors.darkText,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -155,14 +155,14 @@ class _LoginFormState extends State<LoginForm> {
               color: AppColors.textSecondary,
             ),
             filled: true,
-            fillColor: AppColors.lightBackground,
+            fillColor: AppColors.surface,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.darkText),
+              borderSide: const BorderSide(color: AppColors.textPrimary),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/features/auth/ui/widgets/login_header.dart';
 import 'package:match_track/features/auth/ui/widgets/login_form.dart';
 import 'package:match_track/features/auth/ui/bloc/login_bloc.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => LoginBloc(),
       child: Scaffold(
-        backgroundColor: AppColors.darkText,
+        backgroundColor: AppColors.textPrimary,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(children: const [LoginHeader(), LoginForm()]),

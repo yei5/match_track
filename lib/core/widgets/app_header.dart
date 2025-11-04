@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 
 class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -7,20 +8,22 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBackPressed;
 
   const CustomHeader({
-    Key? key,
+    super.key,
     this.title = '',
     this.showBackButton = false,
     this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(60.0);
 
   @override
   Widget build(BuildContext context) {
+    print(showBackButton);
     return AppBar(
       backgroundColor: AppColors.textPrimary,
       elevation: 2,
+      
       leading: showBackButton
           ? IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
@@ -28,24 +31,10 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: Row(
-        children: [
-          Container(
-            width: 40,
+        children: [SvgPicture.asset(
+            'assets/header_logo.svg',
             height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Center(
-              child: Text(
-                'LOGO',
-                style: TextStyle(
-                  color: AppColors.background,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
+            width: 40,
           ),
           const SizedBox(width: 12),
           Text(

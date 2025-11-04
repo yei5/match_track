@@ -5,7 +5,7 @@ import 'package:match_track/features/auth/ui/widgets/redirect_to_login.dart';
 import 'package:match_track/features/auth/ui/widgets/signup_text_field.dart';
 import 'package:match_track/features/auth/ui/widgets/signup_button.dart';
 import 'package:match_track/features/auth/ui/widgets/signup_header.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:match_track/core/presentation/app_theme.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class RedirectToLogin extends StatelessWidget {
   final VoidCallback onLoginTap;
