@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'features/auth/auth_scope.dart';
-import 'features/auth/ui/screens/reset_password_request_screen.dart';
-import 'features/auth/ui/screens/login_screen.dart';
-
-Future<void> main() async {
-  // try load .env if present (not mandatory)
-  try {
-    await dotenv.load();
-  } catch (_) {
-    // ignore
-  }
-
-  final authController = createAuthControllerFromEnv();
-  runApp(MyApp(authController: authController));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   final dynamic authController;
 
-  // Allow an optional authController for tests; production code passes a real one.
+  // Allow injecting a fake authController for tests
   const MyApp({super.key, this.authController});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'match_track',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -34,7 +21,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class MyHomePage extends StatefulWidget {
   final String title;
   final dynamic authController;
@@ -72,22 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: widget.authController == null
                     ? null
-                    : () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => ResetPasswordRequestScreen(controller: widget.authController),
-                        ));
-                      },
-                child: const Text('Reestablecer contraseña'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: widget.authController == null
-                    ? null
-                    : () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => LoginScreen(controller: widget.authController),
-                        ));
-                      },
+                    : () {},
                 child: const Text('Iniciar sesión'),
               ),
               const SizedBox(height: 24),

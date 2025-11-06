@@ -37,7 +37,7 @@ El proyecto implementa Clean Architecture con una clara separación de responsab
   ```
 - **Screens**: 
   - `LoginScreen`: Implementación de UI para autenticación
-  - `ResetPasswordRequestScreen`: Flujo de recuperación de contraseña
+  
 
 #### Arquitectura
 - Estructura organizada por features
@@ -157,14 +157,7 @@ La aplicación utiliza Supabase como backend, específicamente:
    }
    ```
 
-2. **Recuperación de Contraseña**
-   ```dart
-   Future<void> sendPasswordResetEmail(String email) async {
-     // 1. Validación de email
-     // 2. Petición a endpoint de recuperación
-     // 3. Gestión de respuesta
-   }
-   ```
+<!-- Recover password flow removed in feature/game_control branch -->
 
 ### Gestión de Estado
 
