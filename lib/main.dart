@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'features/match/domain/models/team_model.dart';
+import 'features/match/domain/models/match_model.dart';
+import 'features/match/ui/screens/match_control_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,6 +66,23 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               const SizedBox(height: 24),
               Text('Contador: $_counter'),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // Demo: crear un partido entre Icesi y Javeriana
+                  final home = Team(id: 'home-1', name: 'Icesi');
+                  final away = Team(id: 'away-1', name: 'Javeriana');
+                  final match = MatchModel(id: 'match-1', homeTeam: home, awayTeam: away);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => MatchControlScreen(match: match)),
+                  );
+                },
+                icon: const Icon(Icons.sports_soccer),
+                label: const Text('Control de Partido'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                ),
+              ),
             ],
           ),
         ),
