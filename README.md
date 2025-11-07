@@ -5,8 +5,8 @@ Esta primera entrega implementa un flujo completo de autenticacion usando las pa
 Al ejecutar el proyecto se debe crear un archivo .env que contenga las credenciales de acceso a supabase, para fines de la entrega se ponen dichas credenciales en este documento.
 
 ```bash
-SUPABASE_URL=https://hxwhndtlhnkbxnjbrpud.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_CScb8w6Oxzp1Dweg5OkX9g_bJS9tylZ
+SUPABASE_URL= SUPABASE_URL
+SUPABASE_ANON_KEY= SUPABASE_ANON_KEY
 ```
 
 El flujo de la aplicacion es el siguiente:
