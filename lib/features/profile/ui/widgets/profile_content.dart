@@ -195,7 +195,7 @@ class _ProfileContentState extends State<ProfileContent> {
                             padding: const EdgeInsets.only(top: 0),
                             child: TextButton(
                               onPressed: () {
-                                print('Ver todos los torneos');
+                                Navigator.pushNamed(context, '/tournaments');
                               },
                               child: const Text(
                                 'Ver todos los torneos',

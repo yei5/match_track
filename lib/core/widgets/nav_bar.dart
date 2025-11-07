@@ -11,6 +11,28 @@ class CustomBottomNavBar extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  void _navigate(BuildContext context, int index) {
+    if (index == currentIndex) return;
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/control');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/tournaments');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/teams');
+        break;
+      case 4:
+        Navigator.pushReplacementNamed(context, '/profile');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,23 +50,7 @@ class CustomBottomNavBar extends StatelessWidget {
         child: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: (index) {
-            switch (index) {
-              case 0:
-                print('Control seleccionado');
-                break;
-              case 1:
-                print('Torneos seleccionado');
-                break;
-              case 2:
-                print('Inicio seleccionado');
-                break;
-              case 3:
-                print('Equipos seleccionado');
-                break;
-              case 4:
-                print('Perfil seleccionado');
-                break;
-            }
+            _navigate(context, index);
             onTap(index);
           },
           type: BottomNavigationBarType.fixed,
