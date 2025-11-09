@@ -295,7 +295,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Gol
                   _actionButton(
                     icon: Icons.sports_soccer,
-                    color: const Color(0xFFE63946), // Rojo intenso
+                    color: const Color(0xFF2D7A4F), // Verde sobrio
                     onTap: () async {
                       final event = await showDialog<MatchEventDetail>(
                         context: context,
@@ -364,6 +364,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         }
                       }
                     },
+                    label: '+1',
                   ),
                   // Sustitución
                   _actionButton(
@@ -387,7 +388,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         }
                       }
                     },
-                    label: '+1',
                   ),
                   // Interrupción
                   _actionButton(
