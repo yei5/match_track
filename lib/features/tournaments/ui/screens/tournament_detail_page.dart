@@ -17,8 +17,8 @@ class TournamentDetailPage extends StatelessWidget {
     final status = tournament['status'] ?? 'Desconocido';
     final startDate = tournament['start_date'] ?? '---';
     final endDate = tournament['end_date'] ?? '---';
-    final teamA = tournament['team_a'] ?? 'Equipo A';
-    final teamB = tournament['team_b'] ?? 'Equipo B';
+    final team1Id = tournament['team1_id']?.toString() ?? 'Equipo 1';
+    final team2Id = tournament['team2_id']?.toString() ?? 'Equipo 2';
 
     return Scaffold(
       appBar: AppBar(title: Text(name), centerTitle: true),
@@ -74,7 +74,7 @@ class TournamentDetailPage extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  _buildTeams(teamA, teamB),
+                  _buildTeams(team1Id, team2Id),
                 ],
               ),
             ),
@@ -103,16 +103,16 @@ class TournamentDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTeams(String teamA, String teamB) {
+  Widget _buildTeams(String team1Id, String team2Id) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildTeamBadge(teamA),
+        _buildTeamBadge(team1Id),
         const Text(
           'VS',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        _buildTeamBadge(teamB),
+        _buildTeamBadge(team2Id),
       ],
     );
   }

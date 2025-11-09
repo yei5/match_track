@@ -34,13 +34,13 @@ class TournamentRepositoryImpl implements TournamentRepository {
       description: model.description,
       sport: model.sport,
       status: model.status,
-      startDate: model.startDate,
-      endDate: model.endDate,
-      imageUrl: model.imageUrl,
-      creatorId: model.creatorId,
+      start_date: model.start_date,
+      end_date: model.end_date,
+      image_url: model.imageUrl,
+      user_id: model.user_id,
       category: model.category,
-      teamA: model.teamA,
-      teamB: model.teamB,
+      team1_id: model.team1_id,
+      team2_id: model.team2_id,
     );
   }
 
@@ -51,13 +51,13 @@ class TournamentRepositoryImpl implements TournamentRepository {
       description: entity.description,
       sport: entity.sport,
       status: entity.status,
-      startDate: entity.startDate,
-      endDate: entity.endDate,
-      imageUrl: entity.imageUrl,
-      creatorId: entity.creatorId,
+      start_date: entity.start_date,
+      end_date: entity.end_date,
+      imageUrl: entity.image_url,
+      user_id: entity.user_id,
       category: entity.category,
-      teamA: entity.teamA,
-      teamB: entity.teamB,
+      team1_id: entity.team1_id,
+      team2_id: entity.team2_id,
     );
   }
 }

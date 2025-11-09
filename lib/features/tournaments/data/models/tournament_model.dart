@@ -1,16 +1,17 @@
+// ignore_for_file: non_constant_identifier_names
 class TournamentModel {
   final String id;
   final String name;
   final String description;
   final String sport;
   final String status;
-  final String startDate;
-  final String endDate;
+  final String start_date;
+  final String end_date;
   final String? imageUrl;
-  final String creatorId;
+  final String user_id;
   final String category;
-  final String teamA;
-  final String teamB;
+  final String team1_id;
+  final String team2_id;
 
   TournamentModel({
     required this.id,
@@ -18,13 +19,13 @@ class TournamentModel {
     required this.description,
     required this.sport,
     required this.status,
-    required this.startDate,
-    required this.endDate,
+    required this.start_date,
+    required this.end_date,
     this.imageUrl,
-    required this.creatorId,
+    required this.user_id,
     required this.category,
-    required this.teamA,
-    required this.teamB,
+    required this.team1_id,
+    required this.team2_id,
   });
 
   factory TournamentModel.fromJson(Map<String, dynamic> json) {
@@ -34,13 +35,13 @@ class TournamentModel {
       description: json['description'] ?? '',
       sport: json['sport'] ?? '',
       status: json['status'] ?? '',
-      startDate: json['start_date'] ?? '',
-      endDate: json['end_date'] ?? '',
+      start_date: json['start_date'] ?? '',
+      end_date: json['end_date'] ?? '',
       imageUrl: json['image_url'],
-      creatorId: json['creator_id'] ?? '',
+      user_id: json['user_id'] ?? '',
       category: json['category'] ?? '',
-      teamA: json['team_a'] ?? '',
-      teamB: json['team_b'] ?? '',
+      team1_id: json['team1_id']?.toString() ?? '',
+      team2_id: json['team2_id']?.toString() ?? '',
     );
   }
 
@@ -51,13 +52,13 @@ class TournamentModel {
       'description': description,
       'sport': sport,
       'status': status,
-      'start_date': startDate,
-      'end_date': endDate,
+      'start_date': start_date,
+      'end_date': end_date,
       'image_url': imageUrl,
-      'creator_id': creatorId,
+      'user_id': user_id,
       'category': category,
-      'team_a': teamA,
-      'team_b': teamB,
+      'team1_id': team1_id,
+      'team2_id': team2_id,
     };
   }
 }

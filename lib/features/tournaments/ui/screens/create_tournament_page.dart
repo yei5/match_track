@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:match_track/core/widgets/custom_button.dart';
-import 'package:match_track/core/theme/app_colors.dart';
 
 class CreateTournamentPage extends StatefulWidget {
   const CreateTournamentPage({super.key});
@@ -14,11 +14,26 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final Uuid _uuid = const Uuid();
   String _selectedSport = 'Fútbol';
+  String? _selectedCategory;
   bool _loading = false;
+
+  // ✅ VALORES EXACTOS según tu base de datos
+  final List<String> _categories = ['Masculino', 'Femenino', 'Mixto'];
+
+  // ✅ STATUS válidos según tu base de datos
+  final List<String> _statusOptions = ['Activo', 'Programado', 'Finalizado'];
 
   Future<void> _createTournament() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor selecciona una categoría')),
+      );
+      return;
+    }
 
     setState(() => _loading = true);
 
@@ -34,12 +49,53 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     }
 
     try {
-      await Supabase.instance.client.from('tournaments').insert({
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (profile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Error: No se encontró tu perfil. Por favor, completa tu perfil primero.',
+            ),
+          ),
+        );
+        setState(() => _loading = false);
+        return;
+      }
+
+      final team1Id = _uuid.v4();
+      final team2Id = _uuid.v4();
+
+      // ✅ USAR LOS VALORES EXACTOS de la base de datos
+      final tournamentData = {
         'name': _nameController.text,
         'description': _descriptionController.text,
         'sport': _selectedSport,
-        'creator_id': user.id,
-      });
+        'category': _selectedCategory!, // 'Masculino', 'Femenino' o 'Mixto'
+        'user_id': user.id,
+        'status': 'Programado', // ✅ 'Activo', 'Programado' o 'Finalizado'
+        'start_date': DateTime.now().toIso8601String().split('T')[0],
+        'end_date': DateTime.now()
+            .add(const Duration(days: 30))
+            .toIso8601String()
+            .split('T')[0],
+        'team1_id': team1Id,
+        'team2_id': team2Id,
+        'image_url': null,
+      };
+
+      print('📤 Enviando datos: $tournamentData');
+
+      final response = await Supabase.instance.client
+          .from('tournaments')
+          .insert(tournamentData)
+          .select();
+
+      print('✅ Torneo creado exitosamente: $response');
 
       if (mounted) {
         Navigator.pop(context);
@@ -48,9 +104,13 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         );
       }
     } catch (e) {
-      print('Error al crear torneo: $e');
+      print('❌ Error completo al crear torneo: $e');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al crear el torneo.')),
+        SnackBar(
+          content: Text('Error al crear el torneo: ${e.toString()}'),
+          duration: const Duration(seconds: 10),
+        ),
       );
     } finally {
       setState(() => _loading = false);
@@ -96,10 +156,29 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                 ],
                 onChanged: (value) => setState(() => _selectedSport = value!),
               ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                decoration: const InputDecoration(
+                  labelText: 'Categoría',
+                  hintText: 'Selecciona una categoría',
+                ),
+                validator: (value) =>
+                    value == null ? 'Por favor selecciona una categoría' : null,
+                items: _categories.map<DropdownMenuItem<String>>((
+                  String value,
+                ) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => _selectedCategory = value),
+              ),
               const SizedBox(height: 24),
               CustomButton(
                 text: _loading ? 'Creando...' : 'Crear torneo',
-                onPressed: _loading ? null : () => _createTournament(),
+                onPressed: _loading ? null : _createTournament,
               ),
             ],
           ),

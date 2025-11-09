@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:match_track/core/widgets/app_header.dart';
 import 'package:match_track/core/widgets/nav_bar.dart';
@@ -43,19 +44,41 @@ class _TournamentsPageState extends State<TournamentsPage> {
         return;
       }
 
+      print('🔄 Cargando torneos para usuario: ${user.id}');
+
+      // Verificar si el usuario tiene perfil
+      final profile = await supabase
+          .from('profiles')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (profile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: No se encontró tu perfil.')),
+        );
+        return;
+      }
+
+      // Cargar torneos del usuario
       final response = await supabase
           .from('tournaments')
           .select()
-          .eq('creator_id', user.id)
+          .eq('user_id', user.id)
           .order('created_at', ascending: false);
+
+      print('✅ Torneos cargados: ${response.length} torneos encontrados');
 
       setState(() {
         tournaments = List<Map<String, dynamic>>.from(response);
       });
     } catch (e) {
-      print('Error cargando torneos: $e');
+      print('❌ Error completo cargando torneos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al cargar los torneos.')),
+        SnackBar(
+          content: Text('Error al cargar los torneos: ${e.toString()}'),
+          duration: const Duration(seconds: 10),
+        ),
       );
     } finally {
       setState(() => isLoading = false);
@@ -64,13 +87,23 @@ class _TournamentsPageState extends State<TournamentsPage> {
 
   Future<void> _goToCreateTournament() async {
     await Navigator.pushNamed(context, '/createTournament');
-    _loadTournaments();
+    _loadTournaments(); // Recargar la lista después de crear
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomHeader(title: 'Torneos', showBackButton: false),
+
+      floatingActionButton: tournaments.isNotEmpty
+          ? FloatingActionButton(
+              onPressed: _goToCreateTournament,
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add, color: AppColors.surface, size: 28),
+            )
+          : null,
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
       body: RefreshIndicator(
         onRefresh: _loadTournaments,
@@ -116,11 +149,6 @@ class _TournamentsPageState extends State<TournamentsPage> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToCreateTournament,
-        icon: const Icon(Icons.add),
-        label: const Text('Crear torneo'),
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
