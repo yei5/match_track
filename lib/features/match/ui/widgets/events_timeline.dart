@@ -33,6 +33,8 @@ class EventsTimeline extends StatelessWidget {
       ..sort((a, b) => b.minute.compareTo(a.minute));
 
     return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: sortedEvents.length,
       separatorBuilder: (context, index) => Container(
@@ -44,8 +46,8 @@ class EventsTimeline extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF6366F1).withOpacity(0.5),
-              const Color(0xFF6366F1).withOpacity(0.1),
+              const Color(0x806366F1),
+              const Color(0x1A6366F1),
             ],
           ),
         ),
@@ -88,7 +90,10 @@ class EventsTimeline extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: _getEventColor(event.type).withOpacity(0.3),
+                        color: Color.alphaBlend(
+                          const Color(0x4D000000),
+                          _getEventColor(event.type),
+                        ),
                         blurRadius: 8,
                         spreadRadius: 2,
                       ),
@@ -112,13 +117,13 @@ class EventsTimeline extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isHomeTeam 
-                      ? const Color(0xFFE63946).withOpacity(0.1)
-                      : const Color(0xFFF59E0B).withOpacity(0.1),
+                      ? const Color(0x1AE63946)
+                      : const Color(0x1AF59E0B),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isHomeTeam 
-                        ? const Color(0xFFE63946).withOpacity(0.3)
-                        : const Color(0xFFF59E0B).withOpacity(0.3),
+                        ? const Color(0x4DE63946)
+                        : const Color(0x4DF59E0B),
                   ),
                 ),
                 child: Column(
