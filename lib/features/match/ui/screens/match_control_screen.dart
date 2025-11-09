@@ -51,7 +51,11 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
     required Color color,
     required VoidCallback onTap,
     String? label,
+    Color? iconColor,
   }) {
+    final bool isLight = color == const Color(0xFFE5E7EB);
+    final Color finalIconColor = iconColor ?? (isLight ? const Color(0xFF6B7280) : Colors.white);
+    
     return Material(
       color: color,
       borderRadius: BorderRadius.circular(16),
@@ -64,13 +68,13 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: Colors.white, size: 32),
+              Icon(icon, color: finalIconColor, size: 32),
               if (label != null) ...[
                 const SizedBox(height: 4),
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: finalIconColor,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -279,7 +283,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Gol
                   _actionButton(
                     icon: Icons.sports_soccer,
-                    color: AppColors.primary,
+                    color: const Color(0xFFE63946), // Rojo intenso
                     onTap: () {
                       // TODO: Abrir diálogo de gol
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -291,18 +295,19 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Tarjeta Roja
                   _actionButton(
                     icon: Icons.rectangle,
-                    color: AppColors.redCard,
+                    color: const Color(0xFFE63946), // Rojo
                     onTap: () {
                       // TODO: Abrir diálogo de tarjeta roja
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('🟥 Tarjeta Roja - Próximamente')),
                       );
                     },
+                    label: '+1',
                   ),
                   // Tarjeta Amarilla
                   _actionButton(
                     icon: Icons.rectangle,
-                    color: AppColors.yellowCard,
+                    color: const Color(0xFFF59E0B), // Naranja/Amarillo
                     onTap: () {
                       // TODO: Abrir diálogo de tarjeta amarilla
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -312,19 +317,20 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   ),
                   // Sustitución
                   _actionButton(
-                    icon: Icons.sync_alt,
-                    color: AppColors.primary,
+                    icon: Icons.swap_horiz_rounded,
+                    color: const Color(0xFFE5E7EB), // Gris claro
                     onTap: () {
                       // TODO: Abrir diálogo de sustitución
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('🔄 Sustitución - Próximamente')),
                       );
                     },
+                    label: '+1',
                   ),
                   // Interrupción
                   _actionButton(
-                    icon: Icons.pan_tool,
-                    color: AppColors.primary,
+                    icon: Icons.warning_amber_rounded,
+                    color: const Color(0xFFE5E7EB), // Gris claro
                     onTap: () {
                       // TODO: Abrir diálogo de interrupción
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -334,14 +340,14 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   ),
                   // Fin de Tiempo
                   _actionButton(
-                    icon: Icons.access_time,
-                    color: AppColors.primary,
+                    icon: Icons.circle_outlined,
+                    color: const Color(0xFFE5E7EB), // Gris claro
                     onTap: () {
                       controller.endHalfTime();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            match.currentHalf == HalfTime.secondHalf
+                            controller.match.currentHalf == HalfTime.secondHalf
                                 ? '⏱️ Segundo Tiempo'
                                 : '🏁 Fin del Partido',
                           ),
