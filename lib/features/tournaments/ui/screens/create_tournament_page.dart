@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../data/source/tournament_remote_data_source.dart';
+import '../../data/repository/tournament_repository_impl.dart';
+import '../../data/models/tournament_model.dart';
+import '../../domain/usecases/create_tournament.dart';
 
 class CreateTournamentPage extends StatefulWidget {
   const CreateTournamentPage({super.key});
@@ -17,7 +21,18 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   String _selectedSport = 'Fútbol';
   bool _loading = false;
 
-  Future<void> _createTournament() async {
+  late final CreateTournament _createTournament;
+
+  @override
+  void initState() {
+    super.initState();
+    final client = Supabase.instance.client;
+    final remote = TournamentRemoteDataSource(client);
+    final repo = TournamentRepositoryImpl(remoteDataSource: remote);
+    _createTournament = CreateTournament(repo);
+  }
+
+  Future<void> _createTournamentAction() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
@@ -34,12 +49,16 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     }
 
     try {
-      await Supabase.instance.client.from('tournaments').insert({
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'sport': _selectedSport,
-        'creator_id': user.id,
-      });
+      final model = TournamentModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text,
+        description: _descriptionController.text,
+        sport: _selectedSport,
+        creatorId: user.id,
+        createdAt: DateTime.now(),
+      );
+
+      await _createTournament(model);
 
       if (mounted) {
         Navigator.pop(context);
@@ -99,7 +118,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
               const SizedBox(height: 24),
               CustomButton(
                 text: _loading ? 'Creando...' : 'Crear torneo',
-                onPressed: _loading ? null : () => _createTournament(),
+                onPressed: _loading ? null : _createTournamentAction,
               ),
             ],
           ),

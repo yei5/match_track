@@ -10,12 +10,13 @@ class TournamentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = tournament['image_url'];
-    final name = tournament['name'] ?? 'Sin nombre';
-    final sport = tournament['sport'] ?? 'Deporte no especificado';
+    final imageUrl = tournament['image_url'] ?? tournament['imageUrl'];
+    final name = tournament['name'] ?? tournament['name'] ?? 'Sin nombre';
+    final sport =
+        tournament['sport'] ?? tournament['game'] ?? 'Deporte no especificado';
     final status = tournament['status'] ?? 'Desconocido';
-    final startDate = tournament['start_date'] ?? '';
-    final endDate = tournament['end_date'] ?? '';
+    final startDate = tournament['start_date'] ?? tournament['startDate'] ?? '';
+    final endDate = tournament['end_date'] ?? tournament['endDate'] ?? '';
 
     Color statusColor;
     switch (status) {
@@ -49,15 +50,14 @@ class TournamentCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Imagen del torneo
             ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
               ),
-              child: imageUrl != null && imageUrl.isNotEmpty
+              child: imageUrl != null && imageUrl.toString().isNotEmpty
                   ? Image.network(
-                      imageUrl,
+                      imageUrl.toString(),
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
@@ -73,8 +73,6 @@ class TournamentCard extends StatelessWidget {
                       ),
                     ),
             ),
-
-            // Información
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -85,7 +83,7 @@ class TournamentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      name ?? 'Sin nombre',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
