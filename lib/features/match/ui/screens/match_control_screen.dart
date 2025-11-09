@@ -295,7 +295,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Gol
                   _actionButton(
                     icon: Icons.sports_soccer,
-                    color: const Color(0xFF2D7A4F), // Verde sobrio
+                    color: const Color(0xFF00FF00), // Verde brillante
+                    iconColor: Colors.black,
                     onTap: () async {
                       final event = await showDialog<MatchEventDetail>(
                         context: context,
