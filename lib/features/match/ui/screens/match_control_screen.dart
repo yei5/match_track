@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_model.dart';
+import '../../domain/models/match_event_model.dart';
 import '../bloc/match_controller.dart';
+import '../widgets/goal_dialog.dart';
+import '../widgets/card_dialog.dart';
+import '../widgets/substitution_dialog.dart';
+import '../widgets/interruption_dialog.dart';
+import '../widgets/events_timeline.dart';
 import '../../../../core/theme/app_colors_new.dart';
 
 class MatchControlScreen extends StatefulWidget {
@@ -290,11 +296,23 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   _actionButton(
                     icon: Icons.sports_soccer,
                     color: const Color(0xFFE63946), // Rojo intenso
-                    onTap: () {
-                      // TODO: Abrir diálogo de gol
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('⚽ Registrar Gol - Próximamente')),
+                    onTap: () async {
+                      final event = await showDialog<MatchEventDetail>(
+                        context: context,
+                        builder: (context) => GoalDialog(
+                          homeTeam: controller.match.homeTeam,
+                          awayTeam: controller.match.awayTeam,
+                          currentMinute: controller.currentMinute,
+                        ),
                       );
+                      if (event != null) {
+                        controller.addDetailedEvent(event);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('⚽ Gol registrado - Minuto ${event.minute}')),
+                          );
+                        }
+                      }
                     },
                     label: '+1',
                   ),
@@ -302,11 +320,24 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   _actionButton(
                     icon: Icons.rectangle,
                     color: const Color(0xFFE63946), // Rojo
-                    onTap: () {
-                      // TODO: Abrir diálogo de tarjeta roja
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('🟥 Tarjeta Roja - Próximamente')),
+                    onTap: () async {
+                      final event = await showDialog<MatchEventDetail>(
+                        context: context,
+                        builder: (context) => CardDialog(
+                          homeTeam: controller.match.homeTeam,
+                          awayTeam: controller.match.awayTeam,
+                          currentMinute: controller.currentMinute,
+                          isRed: true,
+                        ),
                       );
+                      if (event != null) {
+                        controller.addDetailedEvent(event);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('🟥 Tarjeta roja - Minuto ${event.minute}')),
+                          );
+                        }
+                      }
                     },
                     label: '+1',
                   ),
@@ -314,22 +345,47 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   _actionButton(
                     icon: Icons.rectangle,
                     color: const Color(0xFFF59E0B), // Naranja/Amarillo
-                    onTap: () {
-                      // TODO: Abrir diálogo de tarjeta amarilla
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('🟨 Tarjeta Amarilla - Próximamente')),
+                    onTap: () async {
+                      final event = await showDialog<MatchEventDetail>(
+                        context: context,
+                        builder: (context) => CardDialog(
+                          homeTeam: controller.match.homeTeam,
+                          awayTeam: controller.match.awayTeam,
+                          currentMinute: controller.currentMinute,
+                          isRed: false,
+                        ),
                       );
+                      if (event != null) {
+                        controller.addDetailedEvent(event);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('🟨 Tarjeta amarilla - Minuto ${event.minute}')),
+                          );
+                        }
+                      }
                     },
                   ),
                   // Sustitución
                   _actionButton(
                     icon: Icons.swap_horiz_rounded,
                     color: const Color(0xFF292D32), // Gris oscuro
-                    onTap: () {
-                      // TODO: Abrir diálogo de sustitución
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('🔄 Sustitución - Próximamente')),
+                    onTap: () async {
+                      final event = await showDialog<MatchEventDetail>(
+                        context: context,
+                        builder: (context) => SubstitutionDialog(
+                          homeTeam: controller.match.homeTeam,
+                          awayTeam: controller.match.awayTeam,
+                          currentMinute: controller.currentMinute,
+                        ),
                       );
+                      if (event != null) {
+                        controller.addDetailedEvent(event);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('🔄 Sustitución - Minuto ${event.minute}')),
+                          );
+                        }
+                      }
                     },
                     label: '+1',
                   ),
@@ -337,11 +393,23 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   _actionButton(
                     icon: Icons.warning_amber_rounded,
                     color: const Color(0xFF9CA3AF), // Gris
-                    onTap: () {
-                      // TODO: Abrir diálogo de interrupción
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('🤚 Interrupción - Próximamente')),
+                    onTap: () async {
+                      final event = await showDialog<MatchEventDetail>(
+                        context: context,
+                        builder: (context) => InterruptionDialog(
+                          homeTeam: controller.match.homeTeam,
+                          awayTeam: controller.match.awayTeam,
+                          currentMinute: controller.currentMinute,
+                        ),
                       );
+                      if (event != null) {
+                        controller.addDetailedEvent(event);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('🤚 ${event.displayText} - Minuto ${event.minute}')),
+                          );
+                        }
+                      }
                     },
                   ),
                   // Fin de Tiempo
@@ -362,6 +430,60 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                     },
                   ),
                 ],
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Timeline de eventos
+              AnimatedBuilder(
+                animation: controller,
+                builder: (_, __) {
+                  if (controller.match.detailedEvents.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'No hay eventos registrados aún',
+                          style: TextStyle(
+                            color: AppColors.textLight,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Eventos del Partido',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      EventsTimeline(
+                        events: controller.sortedEvents,
+                        homeTeam: controller.match.homeTeam,
+                        awayTeam: controller.match.awayTeam,
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),

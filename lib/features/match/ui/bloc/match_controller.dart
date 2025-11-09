@@ -2,12 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../domain/models/match_model.dart';
 import '../../domain/models/match_event_model.dart';
+import '../../data/repository/match_repository.dart';
 
 class MatchController extends ChangeNotifier {
   final MatchModel match;
+  final MatchRepository? repository;
   Timer? _ticker;
 
-  MatchController({required this.match});
+  MatchController({
+    required this.match,
+    this.repository,
+  });
 
   int get elapsedSeconds => match.elapsedSeconds;
   int get currentMinute => (match.elapsedSeconds / 60).floor();
@@ -87,7 +92,7 @@ class MatchController extends ChangeNotifier {
 
   // Nuevos métodos para eventos detallados
   
-  void addDetailedEvent(MatchEventDetail event) {
+  Future<void> addDetailedEvent(MatchEventDetail event) async {
     match.detailedEvents.add(event);
     
     // Si es un gol, actualizar el marcador
@@ -99,10 +104,20 @@ class MatchController extends ChangeNotifier {
       }
     }
     
+    // Guardar en repositorio si está disponible
+    if (repository != null) {
+      try {
+        await repository!.saveEvent(event, match.id);
+        await repository!.saveMatch(match);
+      } catch (e) {
+        debugPrint('Error guardando evento: $e');
+      }
+    }
+    
     notifyListeners();
   }
   
-  void removeEvent(String eventId) {
+  Future<void> removeEvent(String eventId) async {
     final event = match.detailedEvents.firstWhere((e) => e.id == eventId);
     
     // Si era un gol, restar del marcador
@@ -115,6 +130,17 @@ class MatchController extends ChangeNotifier {
     }
     
     match.detailedEvents.removeWhere((e) => e.id == eventId);
+    
+    // Eliminar del repositorio si está disponible
+    if (repository != null) {
+      try {
+        await repository!.deleteEvent(eventId, match.id);
+        await repository!.saveMatch(match);
+      } catch (e) {
+        debugPrint('Error eliminando evento: $e');
+      }
+    }
+    
     notifyListeners();
   }
   
