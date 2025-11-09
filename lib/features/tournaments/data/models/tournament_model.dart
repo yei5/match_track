@@ -1,50 +1,46 @@
-import '../../domain/entities/tournament_entity.dart';
+class TournamentModel {
+  final String id;
+  final String name;
+  final String description;
+  final String sport;
+  final String status;
+  final String startDate;
+  final String endDate;
+  final String? imageUrl;
+  final String creatorId;
+  final String category;
+  final String teamA;
+  final String teamB;
 
-class TournamentModel extends TournamentEntity {
   TournamentModel({
-    required String id,
-    String? name,
-    String? description,
-    String? sport,
-    String? imageUrl,
-    String? status,
-    String? startDate,
-    String? endDate,
-    String? teamA,
-    String? teamB,
-    String? creatorId,
-    DateTime? createdAt,
-  }) : super(
-         id: id,
-         name: name,
-         description: description,
-         sport: sport,
-         imageUrl: imageUrl,
-         status: status,
-         startDate: startDate,
-         endDate: endDate,
-         teamA: teamA,
-         teamB: teamB,
-         creatorId: creatorId,
-         createdAt: createdAt,
-       );
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.sport,
+    required this.status,
+    required this.startDate,
+    required this.endDate,
+    this.imageUrl,
+    required this.creatorId,
+    required this.category,
+    required this.teamA,
+    required this.teamB,
+  });
 
   factory TournamentModel.fromJson(Map<String, dynamic> json) {
     return TournamentModel(
-      id: json['id'].toString(),
-      name: json['name'] as String?,
-      description: json['description'] as String?,
-      sport: json['sport'] as String?,
-      imageUrl: json['image_url'] as String?,
-      status: json['status'] as String?,
-      startDate: json['start_date'] as String?,
-      endDate: json['end_date'] as String?,
-      teamA: json['team_a'] as String?,
-      teamB: json['team_b'] as String?,
-      creatorId: json['creator_id'] as String?,
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      sport: json['sport'] ?? '',
+      status: json['status'] ?? '',
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
+      imageUrl: json['image_url'],
+      creatorId: json['creator_id'] ?? '',
+      category: json['category'] ?? '',
+      teamA: json['team_a'] ?? '',
+      teamB: json['team_b'] ?? '',
     );
   }
 
@@ -54,14 +50,14 @@ class TournamentModel extends TournamentEntity {
       'name': name,
       'description': description,
       'sport': sport,
-      'image_url': imageUrl,
       'status': status,
       'start_date': startDate,
       'end_date': endDate,
+      'image_url': imageUrl,
+      'creator_id': creatorId,
+      'category': category,
       'team_a': teamA,
       'team_b': teamB,
-      'creator_id': creatorId,
-      'created_at': createdAt?.toIso8601String(),
     };
   }
 }

@@ -3,9 +3,10 @@ import '../repository/tournament_repository.dart';
 
 class GetTournamentDetail {
   final TournamentRepository repository;
-  GetTournamentDetail(this.repository);
 
-  Future<TournamentEntity?> call(String id) async {
-    return await repository.getTournamentDetail(id);
+  GetTournamentDetail({required this.repository});
+
+  Future<TournamentEntity> call(String tournamentId) {
+    return repository.getTournamentDetail(tournamentId);
   }
 }

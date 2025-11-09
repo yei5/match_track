@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:match_track/core/theme/app_colors.dart';
 
 class EmptyTournament extends StatelessWidget {
   final VoidCallback onCreatePressed;

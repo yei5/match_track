@@ -1,35 +1,51 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/tournament_model.dart';
 
-class TournamentRemoteDataSource {
-  final SupabaseClient client;
+abstract class TournamentRemoteDataSource {
+  TournamentRemoteDataSource(SupabaseClient client);
 
-  TournamentRemoteDataSource(this.client);
+  Future<List<TournamentModel>> getTournaments(String userId);
+  Future<TournamentModel> getTournamentDetail(String tournamentId);
+  Future<TournamentModel> createTournament(TournamentModel tournament);
+}
 
-  Future<List<TournamentModel>> getUserTournaments(String userId) async {
-    final response = await client
+class TournamentRemoteDataSourceImpl implements TournamentRemoteDataSource {
+  final SupabaseClient supabaseClient;
+
+  TournamentRemoteDataSourceImpl({required this.supabaseClient});
+
+  @override
+  Future<List<TournamentModel>> getTournaments(String userId) async {
+    final response = await supabaseClient
         .from('tournaments')
         .select()
         .eq('creator_id', userId)
         .order('created_at', ascending: false);
 
-    if (response == null) return [];
     return (response as List)
-        .map((json) => TournamentModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => TournamentModel.fromJson(json))
         .toList();
   }
 
-  Future<TournamentModel?> getTournamentDetail(String id) async {
-    final response = await client
+  @override
+  Future<TournamentModel> getTournamentDetail(String tournamentId) async {
+    final response = await supabaseClient
         .from('tournaments')
         .select()
-        .eq('id', id)
-        .maybeSingle();
-    if (response == null) return null;
-    return TournamentModel.fromJson(response as Map<String, dynamic>);
+        .eq('id', tournamentId)
+        .single();
+
+    return TournamentModel.fromJson(response);
   }
 
-  Future<void> createTournament(Map<String, dynamic> data) async {
-    await client.from('tournaments').insert(data);
+  @override
+  Future<TournamentModel> createTournament(TournamentModel tournament) async {
+    final response = await supabaseClient
+        .from('tournaments')
+        .insert(tournament.toJson())
+        .select()
+        .single();
+
+    return TournamentModel.fromJson(response);
   }
 }
