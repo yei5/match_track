@@ -53,8 +53,14 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
     String? label,
     Color? iconColor,
   }) {
-    final bool isLight = color == const Color(0xFFE5E7EB);
-    final Color finalIconColor = iconColor ?? (isLight ? const Color(0xFF6B7280) : Colors.white);
+    // Determinar si el botón es claro o oscuro
+    final bool isDark = color == const Color(0xFF292D32);
+    final bool isGray = color == const Color(0xFF9CA3AF);
+    
+    final Color finalIconColor = iconColor ?? 
+      (isDark || isGray ? Colors.white : 
+       color == const Color(0xFFE63946) || color == const Color(0xFFF59E0B) ? Colors.white : 
+       const Color(0xFF6B7280));
     
     return Material(
       color: color,
@@ -318,7 +324,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Sustitución
                   _actionButton(
                     icon: Icons.swap_horiz_rounded,
-                    color: const Color(0xFFE5E7EB), // Gris claro
+                    color: const Color(0xFF292D32), // Gris oscuro
                     onTap: () {
                       // TODO: Abrir diálogo de sustitución
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -330,7 +336,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Interrupción
                   _actionButton(
                     icon: Icons.warning_amber_rounded,
-                    color: const Color(0xFFE5E7EB), // Gris claro
+                    color: const Color(0xFF9CA3AF), // Gris
                     onTap: () {
                       // TODO: Abrir diálogo de interrupción
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -341,7 +347,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   // Fin de Tiempo
                   _actionButton(
                     icon: Icons.circle_outlined,
-                    color: const Color(0xFFE5E7EB), // Gris claro
+                    color: const Color(0xFF292D32), // Gris oscuro
                     onTap: () {
                       controller.endHalfTime();
                       ScaffoldMessenger.of(context).showSnackBar(
