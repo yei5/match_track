@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../domain/models/match_model.dart';
-import '../../domain/models/team_model.dart';
+import '../../domain/models/match_event_model.dart';
 
 class MatchController extends ChangeNotifier {
   final MatchModel match;
   Timer? _ticker;
-  int _accumulated = 0;
 
   MatchController({required this.match});
 
   int get elapsedSeconds => match.elapsedSeconds;
+  int get currentMinute => (match.elapsedSeconds / 60).floor();
+  
   String get formattedTime {
     final s = match.elapsedSeconds;
     final mm = (s ~/ 60).toString().padLeft(2, '0');
@@ -19,6 +20,13 @@ class MatchController extends ChangeNotifier {
   }
 
   bool get isRunning => match.status == MatchStatus.running;
+  
+  // Obtener eventos ordenados por tiempo (más reciente primero)
+  List<MatchEventDetail> get sortedEvents {
+    final events = List<MatchEventDetail>.from(match.detailedEvents);
+    events.sort((a, b) => b.minute.compareTo(a.minute));
+    return events;
+  }
 
   void start() {
     if (isRunning) return;
@@ -74,6 +82,65 @@ class MatchController extends ChangeNotifier {
       timestamp: match.elapsedSeconds,
     );
     match.events.add(ev);
+    notifyListeners();
+  }
+
+  // Nuevos métodos para eventos detallados
+  
+  void addDetailedEvent(MatchEventDetail event) {
+    match.detailedEvents.add(event);
+    
+    // Si es un gol, actualizar el marcador
+    if (event.type == EventType.goal) {
+      if (event.teamId == match.homeTeam.id) {
+        match.homeScore++;
+      } else if (event.teamId == match.awayTeam.id) {
+        match.awayScore++;
+      }
+    }
+    
+    notifyListeners();
+  }
+  
+  void removeEvent(String eventId) {
+    final event = match.detailedEvents.firstWhere((e) => e.id == eventId);
+    
+    // Si era un gol, restar del marcador
+    if (event.type == EventType.goal) {
+      if (event.teamId == match.homeTeam.id) {
+        match.homeScore--;
+      } else if (event.teamId == match.awayTeam.id) {
+        match.awayScore--;
+      }
+    }
+    
+    match.detailedEvents.removeWhere((e) => e.id == eventId);
+    notifyListeners();
+  }
+  
+  void endHalfTime() {
+    if (match.currentHalf == HalfTime.firstHalf) {
+      match.currentHalf = HalfTime.secondHalf;
+      final event = MatchEventDetail(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: EventType.halfTime,
+        minute: currentMinute,
+        teamId: match.homeTeam.id, // No importa el equipo para este evento
+        description: 'Entretiempo',
+      );
+      match.detailedEvents.add(event);
+    } else if (match.currentHalf == HalfTime.secondHalf) {
+      match.currentHalf = HalfTime.finished;
+      final event = MatchEventDetail(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: EventType.fullTime,
+        minute: currentMinute,
+        teamId: match.homeTeam.id,
+        description: 'Fin del partido',
+      );
+      match.detailedEvents.add(event);
+      stop();
+    }
     notifyListeners();
   }
 
