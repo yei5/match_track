@@ -19,23 +19,21 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(showBackButton);
     return AppBar(
+      automaticallyImplyLeading:
+          false, // 👈 evita que Flutter agregue el espacio del botón atrás automáticamente
       backgroundColor: AppColors.textPrimary,
       elevation: 2,
-      
       leading: showBackButton
           ? IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              icon: const Icon(Icons.arrow_back, color: AppColors.surface),
+              // 👆 color corregido (antes estaba invisible)
               onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
             )
-          : null,
+          : null, // 👈 si es false, no deja hueco
       title: Row(
-        children: [SvgPicture.asset(
-            'assets/header_logo.svg',
-            height: 40,
-            width: 40,
-          ),
+        children: [
+          SvgPicture.asset('assets/header_logo.svg', height: 40, width: 40),
           const SizedBox(width: 12),
           Text(
             title,

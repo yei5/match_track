@@ -1,5 +1,8 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:match_track/features/tournaments/ui/screens/create_tournament_page.dart';
+import 'package:match_track/features/tournaments/ui/screens/edit_tournament_page.dart';
+import 'package:match_track/features/tournaments/ui/screens/tournament_detail_page.dart';
+import 'package:match_track/features/tournaments/ui/screens/tournaments_page.dart';
 import 'features/profile/ui/screens/profile_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -36,6 +39,18 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (_) => SignupBloc(), child: SignupScreen()),
         '/login': (_) => const LoginScreen(),
         '/profile': (_) => const ProfilePage(),
+        '/tournaments': (context) => const TournamentsPage(),
+        '/createTournament': (context) => const CreateTournamentPage(),
+        '/tournamentDetail': (context) {
+          final tournament =
+              ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return TournamentDetailPage(tournament: tournament);
+        },
+        '/editTournament': (context) {
+          final tournament =
+              ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return EditTournamentPage(tournament: tournament);
+        },
       },
     );
   }

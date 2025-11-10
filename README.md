@@ -11,8 +11,13 @@ Esta primera entrega implementa un flujo completo de autenticación usando las p
 Al ejecutar el proyecto se debe crear un archivo `.env` que contenga las credenciales de acceso a Supabase:
 
 ```bash
+<<<<<<< HEAD
 SUPABASE_URL=https://tuproyecto.supabase.co
 SUPABASE_ANON_KEY=tu_anon_key_aqui
+=======
+SUPABASE_URL= SUPABASE_URL
+SUPABASE_ANON_KEY= SUPABASE_ANON_KEY
+>>>>>>> feature/tournament_crud
 ```
 
 ### Flujo de la Aplicación

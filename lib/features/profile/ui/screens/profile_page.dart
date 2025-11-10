@@ -11,12 +11,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _currentIndex = 3;
+  int _currentIndex = 4;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomHeader(title: 'Perfil'),
+      appBar: const CustomHeader(title: 'Perfil', showBackButton: false),
       body: const SafeArea(child: ProfileContent()),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
