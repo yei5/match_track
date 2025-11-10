@@ -58,13 +58,73 @@ class EventsTimeline extends StatelessWidget {
     required bool isNeutral,
     required bool isLast,
   }) {
+    // Si es evento neutral, usar layout especial centrado
+    if (isNeutral) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              const Expanded(child: SizedBox()),
+              SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    // Minuto
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6366F1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${event.minute}\'',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Evento neutral centrado
+                    _buildNeutralEvent(event),
+                    const SizedBox(height: 8),
+                    // Línea vertical
+                    if (!isLast)
+                      Container(
+                        width: 2,
+                        height: 20,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFF6366F1),
+                              Color(0x4D6366F1),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (isLast)
+                      const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+              const Expanded(child: SizedBox()),
+            ],
+          ),
+        ],
+      );
+    }
+    
+    // Layout normal para eventos con equipo
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Lado izquierdo (equipo local)
           Expanded(
-            child: isHomeTeam && !isNeutral
+            child: isHomeTeam
                 ? _buildEventContent(event, isHomeTeam, Alignment.centerRight)
                 : const SizedBox(),
           ),
@@ -118,11 +178,9 @@ class EventsTimeline extends StatelessWidget {
           
           // Lado derecho (equipo visitante)
           Expanded(
-            child: !isHomeTeam && !isNeutral
+            child: !isHomeTeam
                 ? _buildEventContent(event, isHomeTeam, Alignment.centerLeft)
-                : isNeutral
-                    ? _buildNeutralEvent(event)
-                    : const SizedBox(),
+                : const SizedBox(),
           ),
         ],
       ),
@@ -173,11 +231,10 @@ class EventsTimeline extends StatelessWidget {
 
   Widget _buildNeutralEvent(MatchEventDetail event) {
     return Container(
-      margin: const EdgeInsets.only(left: 8, bottom: 16),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: const Color(0xFF9CA3AF),
           width: 2,
@@ -186,7 +243,18 @@ class EventsTimeline extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildEventIcon(event.type),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF6366F1).withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              event.type == EventType.halfTime ? Icons.timer : Icons.flag,
+              color: const Color(0xFF6366F1),
+              size: 20,
+            ),
+          ),
           const SizedBox(width: 8),
           Text(
             event.type == EventType.halfTime ? 'Entretiempo' : 'Fin del partido',
