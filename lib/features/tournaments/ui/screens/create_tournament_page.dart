@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 import 'package:match_track/core/widgets/custom_button.dart';
 import 'package:match_track/core/widgets/app_header.dart';
@@ -20,6 +23,11 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final _endDateController = TextEditingController();
   final Uuid _uuid = const Uuid();
 
+  final ImagePicker _picker = ImagePicker();
+
+  Uint8List? _selectedImageBytes;
+  String? _uploadedImageUrl;
+
   String _selectedSport = 'Fútbol';
   String? _selectedCategory;
   String? _selectedStatus;
@@ -28,8 +36,53 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final List<String> _categories = ['Masculino', 'Femenino', 'Mixto'];
   final List<String> _statuses = ['Programado', 'En curso', 'Finalizado'];
   final List<String> _teams = ['Equipo A', 'Equipo B', 'Equipo C', 'Equipo D'];
-
   final List<String> _selectedTeams = [];
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _selectedImageBytes = bytes;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo seleccionar la imagen: $e')),
+      );
+    }
+  }
+
+  Future<String?> _uploadImageToSupabase(Uint8List bytes) async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return null;
+
+      final String fileName = 'tournament_${_uuid.v4()}.jpg';
+      final String filePath = 'tournaments/$fileName';
+
+      // Subir la imagen al bucket 'tournament-images'
+      await Supabase.instance.client.storage
+          .from('tournament-photos')
+          .uploadBinary(
+            filePath,
+            bytes,
+            fileOptions: const FileOptions(contentType: 'image/jpeg'),
+          );
+
+      // Obtener URL pública
+      final String publicUrl = Supabase.instance.client.storage
+          .from('tournament-photos')
+          .getPublicUrl(filePath);
+      return publicUrl;
+    } catch (e) {
+      debugPrint('Error al subir imagen: $e');
+      return null;
+    }
+  }
 
   Future<void> _createTournament() async {
     if (!_formKey.currentState!.validate()) return;
@@ -68,6 +121,11 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         return;
       }
 
+      String? imageUrl;
+      if (_selectedImageBytes != null) {
+        imageUrl = await _uploadImageToSupabase(_selectedImageBytes!);
+      }
+
       final tournamentData = {
         'name': _nameController.text,
         'description': _descriptionController.text,
@@ -84,7 +142,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                   .add(const Duration(days: 30))
                   .toIso8601String()
                   .split('T')[0],
-        'image_url': null,
+        'image_url': imageUrl,
       };
 
       await Supabase.instance.client.from('tournaments').insert(tournamentData);
@@ -109,7 +167,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
       labelText: label,
       labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
       filled: true,
-      fillColor: const Color(0xFFECEFF1),
+      fillColor: const Color(0xFFF3F4F6),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0xFFD0D0D0)),
@@ -170,6 +228,15 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -199,37 +266,42 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Subir imagen
-                      Container(
-                        height: 120,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFECEFF1),
-                          border: Border.all(color: Color(0xFFD0D0D0)),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.image_outlined,
-                                color: Colors.grey,
-                                size: 32,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Subir imagen',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          height: 140,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            border: Border.all(color: const Color(0xFFD0D0D0)),
+                            borderRadius: BorderRadius.circular(14),
+                            image: _selectedImageBytes != null
+                                ? DecorationImage(
+                                    image: MemoryImage(_selectedImageBytes!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
+                          child: _selectedImageBytes == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: Colors.grey[600],
+                                      size: 40,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Agregar imagen',
+                                      style: TextStyle(color: Colors.grey[700]),
+                                    ),
+                                  ],
+                                )
+                              : null,
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      // Campos básicos
                       TextFormField(
                         controller: _nameController,
                         decoration: _inputDecoration('Nombre del torneo'),
@@ -313,13 +385,11 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                             setState(() => _selectedCategory = value),
                       ),
                       const SizedBox(height: 20),
-
-                      // Apartado para equipos
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFECEFF1),
-                          border: Border.all(color: Color(0xFFD0D0D0)),
+                          color: const Color(0xFFF3F4F6),
+                          border: Border.all(color: const Color(0xFFD0D0D0)),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Column(
@@ -368,9 +438,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       TextFormField(
                         controller: _descriptionController,
                         decoration: _inputDecoration('Descripción del torneo'),
