@@ -60,14 +60,14 @@ class EventsTimeline extends StatelessWidget {
   }) {
     // Si es evento neutral, usar layout especial centrado
     if (isNeutral) {
-      return Column(
-        children: [
-          Row(
-            children: [
-              const Expanded(child: SizedBox()),
-              SizedBox(
-                width: 80,
-                child: Column(
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
                   children: [
                     // Minuto
                     Container(
@@ -109,11 +109,10 @@ class EventsTimeline extends StatelessWidget {
                       const SizedBox(height: 16),
                   ],
                 ),
-              ),
-              const Expanded(child: SizedBox()),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       );
     }
     
