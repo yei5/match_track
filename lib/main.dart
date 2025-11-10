@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:match_track/features/tournaments/ui/screens/create_tournament_page.dart';
+import 'package:match_track/features/tournaments/ui/screens/edit_tournament_page.dart';
 import 'package:match_track/features/tournaments/ui/screens/tournament_detail_page.dart';
 import 'package:match_track/features/tournaments/ui/screens/tournaments_page.dart';
 import 'features/profile/ui/screens/profile_page.dart';
@@ -40,8 +41,16 @@ class MyApp extends StatelessWidget {
         '/profile': (_) => const ProfilePage(),
         '/tournaments': (context) => const TournamentsPage(),
         '/createTournament': (context) => const CreateTournamentPage(),
-        '/tournamentDetail': (context) =>
-            const TournamentDetailPage(tournament: {}),
+        '/tournamentDetail': (context) {
+          final tournament =
+              ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return TournamentDetailPage(tournament: tournament);
+        },
+        '/editTournament': (context) {
+          final tournament =
+              ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return EditTournamentPage(tournament: tournament);
+        },
       },
     );
   }
