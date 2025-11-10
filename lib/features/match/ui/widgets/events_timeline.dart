@@ -28,9 +28,9 @@ class EventsTimeline extends StatelessWidget {
       );
     }
 
-    // Ordenar eventos por minuto (más reciente primero)
+    // Ordenar eventos por minuto (más antiguo primero)
     final sortedEvents = List<MatchEventDetail>.from(events)
-      ..sort((a, b) => b.minute.compareTo(a.minute));
+      ..sort((a, b) => a.minute.compareTo(b.minute));
 
     return ListView.builder(
       shrinkWrap: true,
