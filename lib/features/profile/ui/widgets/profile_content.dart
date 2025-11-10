@@ -4,6 +4,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_team_card.dart';
 import '../../../../core/widgets/custom_tournament_card.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../match/domain/models/team_model.dart';
+import '../../../match/domain/models/match_model.dart';
+import '../../../match/ui/screens/match_control_screen.dart';
 
 class ProfileContent extends StatefulWidget {
   const ProfileContent({Key? key}) : super(key: key);
@@ -131,6 +134,54 @@ class _ProfileContentState extends State<ProfileContent> {
                             label: const Text('Editar'),
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // 🔹 Control de Partido (Demo)
+                  _buildSection(
+                    title: 'Funciones de Árbitro',
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Accede al sistema de control de partidos en tiempo real',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              // Crear partido demo
+                              final home = Team(id: 'home-1', name: 'Icesi');
+                              final away = Team(id: 'away-1', name: 'Javeriana');
+                              final match = MatchModel(
+                                id: 'match-1',
+                                homeTeam: home,
+                                awayTeam: away,
+                              );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => MatchControlScreen(match: match),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.sports_soccer),
+                            label: const Text('Iniciar Control de Partido'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 16,
+                              ),
                             ),
                           ),
                         ),
