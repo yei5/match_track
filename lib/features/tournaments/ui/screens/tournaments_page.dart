@@ -8,7 +8,7 @@ import '../widgets/tournament_card.dart';
 import '../widgets/empty_tournaments_state.dart';
 
 class TournamentsPage extends StatefulWidget {
-  const TournamentsPage({Key? key}) : super(key: key);
+  const TournamentsPage({super.key});
 
   @override
   State<TournamentsPage> createState() => _TournamentsPageState();

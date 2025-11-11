@@ -5,8 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class TournamentDetailPage extends StatefulWidget {
   final Map<String, dynamic> tournament;
 
-  const TournamentDetailPage({Key? key, required this.tournament})
-      : super(key: key);
+  const TournamentDetailPage({super.key, required this.tournament});
 
   @override
   State<TournamentDetailPage> createState() => _TournamentDetailPageState();

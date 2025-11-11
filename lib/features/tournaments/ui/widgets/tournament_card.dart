@@ -5,8 +5,7 @@ class TournamentCard extends StatelessWidget {
   final Map<String, dynamic> tournament;
   final VoidCallback? onTap;
 
-  const TournamentCard({Key? key, required this.tournament, this.onTap})
-    : super(key: key);
+  const TournamentCard({super.key, required this.tournament, this.onTap});
 
   @override
   Widget build(BuildContext context) {

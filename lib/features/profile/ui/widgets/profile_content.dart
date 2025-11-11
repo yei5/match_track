@@ -9,7 +9,7 @@ import '../../../match/domain/models/match_model.dart';
 import '../../../match/ui/screens/match_control_screen.dart';
 
 class ProfileContent extends StatefulWidget {
-  const ProfileContent({Key? key}) : super(key: key);
+  const ProfileContent({super.key});
 
   @override
   State<ProfileContent> createState() => _ProfileContentState();
@@ -29,6 +29,7 @@ class _ProfileContentState extends State<ProfileContent> {
   Future<void> _loadUserName() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -41,6 +42,7 @@ class _ProfileContentState extends State<ProfileContent> {
         .eq('user_id', user.id)
         .maybeSingle();
 
+    if (!mounted) return;
     setState(() {
       name = response?['name'];
       isLoading = false;

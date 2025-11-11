@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:match_track/core/domain/model/player.dart';
 import 'package:match_track/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:match_track/features/players/domain/usecases/create_player.dart';
+import 'package:match_track/features/players/domain/usecases/get_players_for_team.dart';
 import 'package:match_track/features/teams/domain/usecases/create_team.dart';
 import 'package:match_track/features/teams/domain/usecases/get_team_detail.dart';
 import 'package:match_track/features/teams/domain/usecases/get_teams.dart';
@@ -12,12 +15,16 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
   final GetTeamDetail getTeamDetail;
   final CreateTeam createTeam;
   final GetCurrentUserUsecase getCurrentUser;
+  final GetPlayersForTeam getPlayersForTeam;
+  final CreatePlayer createPlayer;
 
   TeamBloc({
     required this.getTeams,
     required this.getTeamDetail,
     required this.createTeam,
     required this.getCurrentUser,
+    required this.getPlayersForTeam,
+    required this.createPlayer,
   }) : super(TeamInitialState()) {
     on<LoadTeamsEvent>(_onLoadTeams);
     on<LoadTeamDetailEvent>(_onLoadTeamDetail);
@@ -26,7 +33,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
   Future<String?> _getCurrentUserId() async {
     final user = await getCurrentUser.call();
-    return user?.id; // Ajusta si tu modelo usa otra propiedad
+    return user?.id;
   }
 
   Future<void> _onLoadTeams(
@@ -54,7 +61,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     emit(TeamLoadingState());
     try {
       final team = await getTeamDetail.call(event.teamId);
-      emit(TeamDetailLoadedState(team: team));
+      final players = await getPlayersForTeam.call(event.teamId);
+      emit(TeamDetailLoadedState(team: team, players: players));
     } catch (e) {
       emit(TeamErrorState(message: e.toString()));
     }
@@ -71,9 +79,22 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         emit(TeamErrorState(message: "User not logged in"));
         return;
       }
-      final team = Team.copyWith(team: event.team, creator_id: currentUserId);
-      final created = await createTeam.call(team);
-      emit(TeamCreatedState(team: created));
+      // 1. Create the team
+      print("creating team: ${event.team.toJson()}");
+      final teamWithCreator =
+          Team.copyWith(team: event.team, creator_id: currentUserId);
+      final createdTeam = await createTeam.call(teamWithCreator);
+
+      print("created team: ${createdTeam.toJson()}");
+      // 2. Create each player with the new team's ID
+      for (final player in event.players) {
+        final playerWithTeamId =
+            Player.copyWith(player: player, team_id: createdTeam.id);
+        print( "Creating player with team ID: ${playerWithTeamId.toJson()}");
+        await createPlayer.call(playerWithTeamId);
+      }
+
+      emit(TeamCreatedState(team: createdTeam));
     } catch (e) {
       emit(TeamErrorState(message: e.toString()));
     }

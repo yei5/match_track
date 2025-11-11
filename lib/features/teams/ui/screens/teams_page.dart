@@ -18,7 +18,7 @@ class TeamsPage extends StatefulWidget {
 }
 
 class _TeamsPageState extends State<TeamsPage> {
-  int _currentIndex = 3;
+  final int _currentIndex = 3;
 
   @override
   void initState() {
@@ -40,9 +40,10 @@ class _TeamsPageState extends State<TeamsPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => TeamDetailPage(team: state.team),
+                builder: (_) =>
+                    TeamDetailPage(team: state.team, players: state.players),
               ),
-            );
+            ).then((_) => context.read<TeamBloc>().add(LoadTeamsEvent()));
           }
         },
         child: BlocBuilder<TeamBloc, TeamState>(

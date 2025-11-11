@@ -4,7 +4,7 @@ import '../theme/app_colors.dart';
 class CustomTeamCard extends StatelessWidget {
   final String teamName;
 
-  const CustomTeamCard({Key? key, required this.teamName}) : super(key: key);
+  const CustomTeamCard({super.key, required this.teamName});
 
   @override
   Widget build(BuildContext context) {

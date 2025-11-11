@@ -1,3 +1,4 @@
+import 'package:match_track/core/domain/model/player.dart';
 import 'package:match_track/core/domain/model/team.dart';
 
 abstract class TeamEvent {}
@@ -12,6 +13,7 @@ class LoadTeamDetailEvent extends TeamEvent {
 
 class CreateTeamEvent extends TeamEvent {
   final Team team;
+  final List<Player> players;
 
-  CreateTeamEvent({required this.team});
+  CreateTeamEvent({required this.team, required this.players});
 }

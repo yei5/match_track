@@ -13,12 +13,17 @@ class PlayerRemoteDataSourceImpl implements PlayerRemoteDataSource {
 
   @override
   Future<Player> createPlayer(Player player) async {
-    final response = await supabaseClient
+    try{final response = await supabaseClient
         .from('players')
-        .insert(player.toJson()) // Assuming Player has toJson
+        .insert(player.toJson())
         .select()
         .single();
-    return Player.fromJson(response); // Assuming Player has fromJson
+    return Player.fromJson(response);
+    } catch (e) {
+      print('Error creating player: $e');
+      rethrow;
+    }
+    
   }
 
   @override

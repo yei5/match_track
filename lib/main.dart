@@ -6,6 +6,10 @@ import 'package:match_track/features/auth/domain/usecases/get_current_user_useca
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
 import 'package:match_track/features/auth/ui/screens/login_screen.dart';
 import 'package:match_track/features/auth/ui/screens/signup_screen.dart';
+import 'package:match_track/features/players/data/repository/player_repository_impl.dart';
+import 'package:match_track/features/players/data/source/player_remote_data_source.dart';
+import 'package:match_track/features/players/domain/usecases/create_player.dart';
+import 'package:match_track/features/players/domain/usecases/get_players_for_team.dart';
 import 'package:match_track/features/profile/ui/screens/profile_page.dart';
 import 'package:match_track/features/teams/data/repository/team_repository_impl.dart';
 import 'package:match_track/features/teams/data/source/team_remote_data_source.dart';
@@ -46,22 +50,34 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SignupBloc()),
         BlocProvider(
           create: (_) {
+            // Team Feature Dependencies
             final teamRemoteDataSource = TeamRemoteDataSourceImpl();
             final teamRepository =
                 TeamRepositoryImpl(remoteDataSource: teamRemoteDataSource);
             final getTeams = GetTeams(repository: teamRepository);
             final getTeamDetail = GetTeamDetail(repository: teamRepository);
-            final createTeam = CreateTeam(repository: teamRepository);
+            final createTeamUseCase = CreateTeam(repository: teamRepository);
             final authRepository =
                 AuthRepositoryImpl();
             final getCurrentUser =
                 GetCurrentUserUsecase(repository: authRepository);
 
+            // Player dependencies for TeamBloc
+            final playerRemoteDataSource = PlayerRemoteDataSourceImpl();
+            final playerRepository =
+                PlayerRepositoryImpl(remoteDataSource: playerRemoteDataSource);
+            final getPlayersForTeam =
+                GetPlayersForTeam(repository: playerRepository);
+            final createPlayerUseCase =
+                CreatePlayer(repository: playerRepository);
+
             return TeamBloc(
               getTeams: getTeams,
               getTeamDetail: getTeamDetail,
-              createTeam: createTeam,
+              createTeam: createTeamUseCase,
               getCurrentUser: getCurrentUser,
+              getPlayersForTeam: getPlayersForTeam,
+              createPlayer: createPlayerUseCase,
             );
           },
         ),

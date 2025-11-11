@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:match_track/core/domain/model/player.dart';
 import 'package:match_track/core/domain/model/team.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 
 class TeamDetailPage extends StatelessWidget {
   final Team team;
-  const TeamDetailPage({super.key, required this.team});
+  final List<Player> players;
+  const TeamDetailPage({super.key, required this.team, required this.players});
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +65,32 @@ class TeamDetailPage extends StatelessWidget {
                               fontSize: 18, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 8),
-                        // TODO: Display list of players
-                        const Center(
-                            child:
-                                Text('La lista de jugadores aparecerá aquí.')),
+                        players.isEmpty
+                            ? const Center(
+                                child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child:
+                                    Text('Este equipo aún no tiene jugadores.'),
+                              ))
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: players.length,
+                                itemBuilder: (context, index) {
+                                  final player = players[index];
+                                  return Card(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        child: Text(player.jersey_number),
+                                      ),
+                                      title: Text(player.name),
+                                      subtitle: Text(player.sport),
+                                    ),
+                                  );
+                                },
+                              ),
                       ],
                     ),
                   ),

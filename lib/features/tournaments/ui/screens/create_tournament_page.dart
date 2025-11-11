@@ -143,7 +143,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedSport,
+                initialValue: _selectedSport,
                 decoration: const InputDecoration(labelText: 'Deporte'),
                 items: const [
                   DropdownMenuItem(value: 'Fútbol', child: Text('Fútbol')),
@@ -158,7 +158,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Categoría',
                   hintText: 'Selecciona una categoría',

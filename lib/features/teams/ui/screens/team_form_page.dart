@@ -38,8 +38,8 @@ class _TeamFormPageState extends State<TeamFormPage> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.pop(context);
             context.read<TeamBloc>().add(LoadTeamsEvent());
+            Navigator.pop(context);
           } else if (state is TeamErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -116,9 +116,13 @@ class _TeamFormPageState extends State<TeamFormPage> {
                           final player = await Navigator.push<Player>(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const PlayerFormPage(),
+                              builder: (_) => PlayerFormPage(
+                                teamSport: sport ?? "Fútbol",
+                                teamCategory: category ?? "Masculino",
+                              ),
                             ),
                           );
+                          if (!mounted) return;
                           if (player != null) {
                             setState(() {
                               players.add(player);
@@ -171,7 +175,8 @@ class _TeamFormPageState extends State<TeamFormPage> {
                                   creator_id: '',
                                 );
                                 context.read<TeamBloc>().add(
-                                      CreateTeamEvent(team: team),
+                                      CreateTeamEvent(
+                                          team: team, players: players),
                                     );
                               }
                             },

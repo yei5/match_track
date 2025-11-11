@@ -31,8 +31,7 @@ class Player {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = {
       'name': name,
       'sport': sport,
       'image_url': imageUrl,
@@ -40,6 +39,10 @@ class Player {
       'jersey_number': jersey_number,
       'team_id': team_id,
     };
+    if (id.isNotEmpty) {
+      map['id'] = id;
+    }
+    return map;
   }
 
   factory Player.copyWith({

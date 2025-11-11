@@ -4,8 +4,7 @@ import 'package:match_track/core/theme/app_colors.dart';
 class EmptyTeams extends StatelessWidget {
   final VoidCallback onCreatePressed;
 
-  const EmptyTeams({Key? key, required this.onCreatePressed})
-    : super(key: key);
+  const EmptyTeams({super.key, required this.onCreatePressed});
 
   @override
   Widget build(BuildContext context) {
