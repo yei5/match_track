@@ -51,7 +51,7 @@ class AuthRepositoryImpl extends AuthRepository {
 
   // Usuario actual
   @override
-  User? currentUser() {
-    return _client.auth.currentUser;
+  Future<User?> currentUser() {
+    return _authDataSource.getCurrentUser();
   }
 }
