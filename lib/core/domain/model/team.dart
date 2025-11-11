@@ -31,8 +31,7 @@ class Team {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = {
       'name': name,
       'description': description,
       'sport': sport,
@@ -40,5 +39,30 @@ class Team {
       'creator_id': creator_id,
       'category': category,
     };
+    if (id.isNotEmpty) {
+      map['id'] = id;
+    }
+    return map;
+  }
+
+  factory Team.copyWith({
+    required Team team,
+    String? id,
+    String? name,
+    String? description,
+    String? sport,
+    String? imageUrl,
+    String? creator_id,
+    String? category,
+  }) {
+    return Team(
+      id: id ?? team.id,
+      name: name ?? team.name,
+      description: description ?? team.description,
+      sport: sport ?? team.sport,
+      imageUrl: imageUrl ?? team.imageUrl,
+      creator_id: creator_id ?? team.creator_id,
+      category: category ?? team.category,
+    );
   }
 }

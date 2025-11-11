@@ -3,8 +3,8 @@ import 'package:match_track/features/auth/domain/repository/auth_repository.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GetCurrentUserUsecase {
-  final AuthRepository repository = AuthRepositoryImpl();
-  GetCurrentUserUsecase();
+  final AuthRepository repository;
+  GetCurrentUserUsecase({required this.repository});
 
   Future<User?> call() async {
     return await repository.currentUser();

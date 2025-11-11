@@ -11,6 +11,8 @@ class AuthRepositoryImpl extends AuthRepository {
   final AuthDataSource _authDataSource = AuthDataSourceImpl();
   final ProfileDataSource _profileDataSource = ProfileDataSourceImpl();
 
+  AuthRepositoryImpl();
+
   @override
   Future<void> registerUser(Profile profile, String password) async {
     String? userId = await _authDataSource.signUp(profile.email, password);

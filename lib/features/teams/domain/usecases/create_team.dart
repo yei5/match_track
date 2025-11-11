@@ -6,7 +6,7 @@ import 'package:match_track/core/domain/model/team.dart';
 class CreateTeam {
   final TeamRepository repository;
 
-  CreateTeam(TeamRepositoryImpl repo, {required this.repository});
+  CreateTeam({required this.repository});
 
   Future<Team> call(Team team) {
     return repository.createTeam(team);

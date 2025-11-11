@@ -8,16 +8,16 @@ abstract class TeamRemoteDataSource {
 }
 
 class TeamRemoteDataSourceImpl implements TeamRemoteDataSource {
-  final SupabaseClient supabaseClient;
+  final SupabaseClient supabaseClient = Supabase.instance.client;
 
-  TeamRemoteDataSourceImpl({required this.supabaseClient});
+  TeamRemoteDataSourceImpl();
 
   @override
   Future<List<Team>> getTeams(String userId) async {
     final response = await supabaseClient
         .from('teams')
         .select()
-        .eq('user_id', userId)
+        .eq('creator_id', userId)
         .order('created_at', ascending: false);
 
     return (response as List)
