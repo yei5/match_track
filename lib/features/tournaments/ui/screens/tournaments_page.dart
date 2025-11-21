@@ -135,12 +135,13 @@ class _TournamentsPageState extends State<TournamentsPage> {
                           final tournament = tournaments[index];
                           return TournamentCard(
                             tournament: tournament,
-                            onTap: () {
-                              Navigator.pushNamed(
+                            onTap: () async {
+                              await Navigator.pushNamed(
                                 context,
                                 '/tournamentDetail',
                                 arguments: tournament,
                               );
+                              _loadTournaments(); // Recargar al volver
                             },
                           );
                         },

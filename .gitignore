@@ -50,7 +50,7 @@ flutter_sdk/
 .env
 .vscode/
 
-// lib/core/env.dart
-// NO subir este archivo al repo (añadirlo a .gitignore).
-const String SUPABASE_URL = 'https://tuproyecto.supabase.co';
-const String SUPABASE_ANON_KEY = 'eyJ...tu_anon_key_aqui...';
+# lib/core/env.dart
+# NO subir este archivo al repo (añadirlo a .gitignore).
+# const String SUPABASE_URL = 'https://tuproyecto.supabase.co';
+# const String SUPABASE_ANON_KEY = 'eyJ...tu_anon_key_aqui...';

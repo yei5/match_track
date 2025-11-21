@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/yeison/Desktop/Semestre7/moviles/match_track/linux"
+    "cmake.sourceDirectory": "/home/yeison/Desktop/Semestre7/moviles/match_track/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
