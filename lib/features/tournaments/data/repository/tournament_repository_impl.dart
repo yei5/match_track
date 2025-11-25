@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import '../../domain/entities/tournament_entity.dart';
 import '../../domain/repository/tournament_repository.dart';
 import '../models/tournament_model.dart';
@@ -21,9 +22,15 @@ class TournamentRepositoryImpl implements TournamentRepository {
   }
 
   @override
-  Future<TournamentEntity> createTournament(TournamentEntity tournament) async {
+  Future<TournamentEntity> createTournament(
+    TournamentEntity tournament, {
+    Uint8List? imageBytes,
+  }) async {
     final model = _mapEntityToModel(tournament);
-    final createdModel = await remoteDataSource.createTournament(model);
+    final createdModel = await remoteDataSource.createTournament(
+      model,
+      imageBytes: imageBytes,
+    );
     return _mapModelToEntity(createdModel);
   }
 
