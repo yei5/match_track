@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class EditTournamentPage extends StatefulWidget {
   final Map<String, dynamic> tournament;
 
-  const EditTournamentPage({Key? key, required this.tournament})
-      : super(key: key);
+  const EditTournamentPage({super.key, required this.tournament});
 
   @override
   _EditTournamentPageState createState() => _EditTournamentPageState();
@@ -137,7 +136,7 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _sport,
+                  initialValue: _sport,
                   decoration: const InputDecoration(
                     labelText: 'Deporte',
                     border: OutlineInputBorder(),
@@ -156,7 +155,7 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _category,
+                  initialValue: _category,
                   decoration: const InputDecoration(
                     labelText: 'Categoría',
                     border: OutlineInputBorder(),

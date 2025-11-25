@@ -81,8 +81,9 @@ class _LoginFormState extends State<LoginForm> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                   validator: (value) {
-                    if (passwordErrorMessage != null)
+                    if (passwordErrorMessage != null) {
                       return passwordErrorMessage;
+                    }
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingresa tu contraseña';
                     }

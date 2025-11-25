@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 
-class EmptyTournament extends StatelessWidget {
+class EmptyTeams extends StatelessWidget {
   final VoidCallback onCreatePressed;
 
-  const EmptyTournament({super.key, required this.onCreatePressed});
+  const EmptyTeams({super.key, required this.onCreatePressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,18 +15,18 @@ class EmptyTournament extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.emoji_events_outlined,
+              Icons.groups_outlined,
               color: AppColors.primary.withOpacity(0.6),
               size: 80,
             ),
             const SizedBox(height: 16),
             const Text(
-              'Aún no has creado torneos',
+              'Aún no has creado equipos',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Crea tu primer torneo para comenzar a organizar tus competiciones.',
+              'Crea tu primer equipo para empezar a añadir jugadores y organizar partidos.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
@@ -34,7 +34,7 @@ class EmptyTournament extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onCreatePressed,
               icon: const Icon(Icons.add),
-              label: const Text('Crear torneo'),
+              label: const Text('Crear equipo'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

@@ -9,14 +9,14 @@ class TournamentFilterBar extends StatelessWidget {
   final ValueChanged<bool> onToggleMyTournaments;
 
   const TournamentFilterBar({
-    Key? key,
+    super.key,
     required this.selectedSport,
     required this.selectedStatus,
     required this.showMyTournaments,
     required this.onSportChanged,
     required this.onStatusChanged,
     required this.onToggleMyTournaments,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -7,11 +7,11 @@ class CustomTournamentCard extends StatelessWidget {
   final String description;
 
   const CustomTournamentCard({
-    Key? key,
+    super.key,
     required this.date,
     required this.status,
     required this.description,
-  }) : super(key: key);
+  });
 
   Color _getStatusColor(String estado) {
     switch (estado.toLowerCase()) {
