@@ -9,6 +9,7 @@ import 'package:match_track/features/teams/ui/bloc/team_state.dart';
 import 'package:match_track/features/teams/ui/screens/team_detail_page.dart';
 import 'package:match_track/features/teams/ui/widgets/empty_teams_state.dart';
 import 'package:match_track/features/teams/ui/widgets/team_card.dart';
+import 'package:match_track/features/teams/ui/widgets/team_filter_bar.dart';
 
 class TeamsPage extends StatefulWidget {
   const TeamsPage({super.key});
@@ -19,11 +20,20 @@ class TeamsPage extends StatefulWidget {
 
 class _TeamsPageState extends State<TeamsPage> {
   final int _currentIndex = 3;
+  String selectedSport = 'Todos';
+  String selectedCategory = 'Todos';
 
   @override
   void initState() {
     super.initState();
-    context.read<TeamBloc>().add(LoadTeamsEvent());
+    _loadTeamsWithFilters();
+  }
+
+  void _loadTeamsWithFilters() {
+    context.read<TeamBloc>().add(LoadTeamsEvent(
+          sport: selectedSport,
+          category: selectedCategory,
+        ));
   }
 
   void _goToCreateTeam() {
@@ -34,21 +44,11 @@ class _TeamsPageState extends State<TeamsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomHeader(title: 'Mis equipos'),
-      body: BlocListener<TeamBloc, TeamState>(
-        listener: (context, state) {
-          if (state is TeamDetailLoadedState) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    TeamDetailPage(team: state.team, players: state.players),
-              ),
-            ).then((_) => context.read<TeamBloc>().add(LoadTeamsEvent()));
-          }
-        },
-        child: BlocBuilder<TeamBloc, TeamState>(
+      body: BlocBuilder<TeamBloc, TeamState>(
           builder: (context, state) {
-            if (state is TeamLoadingState || state is TeamInitialState) {
+            if (state is TeamLoadingState ||
+                state is TeamInitialState ||
+                state is TeamDetailLoadedState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is TeamsLoadedState) {
               final teams = state.teams;
@@ -59,17 +59,45 @@ class _TeamsPageState extends State<TeamsPage> {
 
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<TeamBloc>().add(LoadTeamsEvent());
+                  _loadTeamsWithFilters();
                 },
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(12.0),
-                  itemCount: teams.length,
-                  itemBuilder: (_, i) => TeamCard(
-                    team: teams[i],
-                    onTap: () => context
-                        .read<TeamBloc>()
-                        .add(LoadTeamDetailEvent(teamId: teams[i].id)),
-                  ),
+                child: Column(
+                  children: [
+                    TeamFilterBar(
+                      selectedSport: selectedSport,
+                      selectedCategory: selectedCategory,
+                      onSportChanged: (value) {
+                        setState(() {
+                          selectedSport = value;
+                        });
+                        _loadTeamsWithFilters();
+                      },
+                      onCategoryChanged: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                        _loadTeamsWithFilters();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(12.0),
+                        itemCount: teams.length,
+                        itemBuilder: (_, i) => TeamCard(
+                          team: teams[i],
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TeamDetailPage(
+                                teamId: teams[i].id,
+                              ),
+                            ),
+                          ).then((_) => _loadTeamsWithFilters()),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
             } else if (state is TeamErrorState) {
@@ -79,7 +107,6 @@ class _TeamsPageState extends State<TeamsPage> {
             }
           },
         ),
-      ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {

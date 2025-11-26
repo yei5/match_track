@@ -5,7 +5,8 @@ class GetTeams {
   final TeamRepository repository;
   GetTeams({required this.repository});
 
-  Future<List<Team>> call(String userId) {
-    return repository.getTeams(userId);
+  Future<List<Team>> call(String userId, {String? sport, String? category}) {
+    return repository.getTeams(userId, sport: sport, category: category);
   }
 }
+
