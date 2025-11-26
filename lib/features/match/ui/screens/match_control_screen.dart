@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../../domain/models/match_model.dart';
 import '../../domain/models/match_event_model.dart';
@@ -8,6 +11,8 @@ import '../widgets/substitution_dialog.dart';
 import '../widgets/interruption_dialog.dart';
 import '../widgets/events_timeline.dart';
 import '../../../../core/theme/app_colors_new.dart';
+import 'package:match_track/features/match/utils/match_sheet_pdf_generator.dart';
+import 'package:match_track/utils/file_saver.dart'; // Import the new file saver utility
 
 class MatchControlScreen extends StatefulWidget {
   final MatchModel match;
@@ -31,6 +36,32 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _generateAndOpenPdf() async {
+    try {
+      final Uint8List pdfBytes =
+          await MatchSheetPdfGenerator.generate(controller.match);
+
+      final fileSaver = getFileSaver();
+      await fileSaver.saveAndOpenFile(
+        pdfBytes,
+        'match_sheet_${controller.match.id}.pdf',
+        'application/pdf',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF generado con éxito.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al generar o abrir el PDF: $e')),
+        );
+      }
+    }
   }
 
   Widget _controlButton(IconData icon, VoidCallback onTap) {
@@ -109,6 +140,12 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _generateAndOpenPdf,
+        label: const Text('Generar PDF'),
+        icon: const Icon(Icons.picture_as_pdf),
+        backgroundColor: AppColors.background,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

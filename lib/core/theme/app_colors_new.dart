@@ -4,6 +4,7 @@ class AppColors {
   // Colores principales del diseño (desde Figma/diseño)
   static const Color primary = Color(0xFF6366F1); // Morado/Azul principal
   static const Color background = Color(0xFFFAFAFA); // Fondo blanco
+  static const Color accent = Color(0xFFF59E0B); // Color de acento (ej. para FAB)
   static const Color textDark = Color(0xFF374151); // Texto oscuro
   static const Color textLight = Color(0xFF9CA3AF); // Texto claro
   static const Color surface = Color(0xFFF3F4F6); // Superficie gris claro
