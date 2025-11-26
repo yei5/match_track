@@ -8,8 +8,8 @@ class TeamRepositoryImpl implements TeamRepository {
   TeamRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Team>> getTeams(String userId) async {
-    final models = await remoteDataSource.getTeams(userId);
+  Future<List<Team>> getTeams(String userId, {String? sport, String? category}) async {
+    final models = await remoteDataSource.getTeams(userId, sport: sport, category: category);
     return models.map((model) => _mapModelToEntity(model)).toList();
   }
 
@@ -24,6 +24,18 @@ class TeamRepositoryImpl implements TeamRepository {
     final model = _mapEntityToModel(team);
     final createdModel = await remoteDataSource.createTeam(model);
     return _mapModelToEntity(createdModel);
+  }
+
+  @override
+  Future<Team> updateTeam(Team team) async {
+    final model = _mapEntityToModel(team);
+    final updatedModel = await remoteDataSource.updateTeam(model);
+    return _mapModelToEntity(updatedModel);
+  }
+
+  @override
+  Future<void> deleteTeam(String teamId) async {
+    await remoteDataSource.deleteTeam(teamId);
   }
 
   Team _mapModelToEntity(Team model) {

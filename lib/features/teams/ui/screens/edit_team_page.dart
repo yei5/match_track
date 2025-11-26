@@ -12,41 +12,54 @@ import 'package:match_track/core/utils/image_upload_util.dart';
 import 'player_form_page.dart';
 import 'package:dotted_border/dotted_border.dart';
 
-class TeamFormPage extends StatefulWidget {
-  const TeamFormPage({super.key});
+class EditTeamPage extends StatefulWidget {
+  final Team team;
+  final List<Player> players;
+  const EditTeamPage({super.key, required this.team, required this.players});
 
   @override
-  State<TeamFormPage> createState() => _TeamFormPageState();
+  State<EditTeamPage> createState() => _EditTeamPageState();
 }
 
-class _TeamFormPageState extends State<TeamFormPage> {
+class _EditTeamPageState extends State<EditTeamPage> {
   final _formKey = GlobalKey<FormState>();
-  final nameCtrl = TextEditingController();
-  final descCtrl = TextEditingController();
+  late TextEditingController nameCtrl;
+  late TextEditingController descCtrl;
   String? sport;
   String? category;
   List<Player> players = [];
   Uint8List? _selectedImageBytes;
+  String? _currentImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    nameCtrl = TextEditingController(text: widget.team.name);
+    descCtrl = TextEditingController(text: widget.team.description);
+    sport = widget.team.sport;
+    category = widget.team.category;
+    players = widget.players;
+    _currentImageUrl = widget.team.imageUrl;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Información básica")),
+      appBar: AppBar(title: const Text("Editar Información")),
       body: BlocListener<TeamBloc, TeamState>(
         listener: (context, state) {
-          if (state is TeamCreatedState) {
+          if (state is TeamUpdatedState) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Equipo creado exitosamente!'),
+                content: Text('Equipo actualizado exitosamente!'),
                 backgroundColor: Colors.green,
               ),
             );
-            context.read<TeamBloc>().add(LoadTeamsEvent());
             Navigator.pop(context);
           } else if (state is TeamErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Error al crear equipo: ${state.message}'),
+                content: Text('Error al actualizar equipo: ${state.message}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -60,6 +73,7 @@ class _TeamFormPageState extends State<TeamFormPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AddImageBox(
+                  imageUrl: _currentImageUrl,
                   selectedImageBytes: _selectedImageBytes,
                   onImageSelected: (bytes) {
                     setState(() {
@@ -76,7 +90,7 @@ class _TeamFormPageState extends State<TeamFormPage> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: sport,
+                  value: sport,
                   items: const [
                     DropdownMenuItem(value: "Fútbol", child: Text("Fútbol")),
                     DropdownMenuItem(
@@ -89,7 +103,7 @@ class _TeamFormPageState extends State<TeamFormPage> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: category,
+                  value: category,
                   items: const [
                     DropdownMenuItem(
                       value: "Masculino",
@@ -164,8 +178,24 @@ class _TeamFormPageState extends State<TeamFormPage> {
                         ),
                       );
                     }
-                    return Card(
-                        child: Center(child: Text(players[i].name)));
+                    return Stack(
+                      children: [
+                        Card(
+                            child: Center(child: Text(players[i].name))),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.remove_circle, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                players.removeAt(i);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
                   },
                 ),
                 const SizedBox(height: 20),
@@ -173,12 +203,11 @@ class _TeamFormPageState extends State<TeamFormPage> {
                   builder: (context, state) {
                     final loading = state is TeamLoadingState;
                     return CustomButton(
-                      text: loading ? 'Creando...' : 'Crear equipo',
+                      text: loading ? 'Actualizando...' : 'Actualizar equipo',
                       onPressed: loading
                           ? null
                           : () async {
                               if (_formKey.currentState!.validate()) {
-                                setState(() {});
                                 String? imageUrl;
                                 if (_selectedImageBytes != null) {
                                   imageUrl = await ImageUploadUtil
@@ -187,18 +216,20 @@ class _TeamFormPageState extends State<TeamFormPage> {
                                     bucketName: 'team-photos',
                                     folderPath: 'teams',
                                   );
+                                } else {
+                                  imageUrl = _currentImageUrl;
                                 }
                                 final team = Team(
-                                  id: '',
+                                  id: widget.team.id,
                                   name: nameCtrl.text,
                                   sport: sport ?? "Fútbol",
                                   imageUrl: imageUrl,
                                   category: category ?? "Masculino",
                                   description: descCtrl.text,
-                                  creator_id: '',
+                                  creator_id: widget.team.creator_id,
                                 );
                                 context.read<TeamBloc>().add(
-                                      CreateTeamEvent(
+                                      UpdateTeamEvent(
                                           team: team, players: players),
                                     );
                               }

@@ -1,11 +1,11 @@
 import 'package:match_track/features/players/domain/repository/player_repository.dart';
 
-class DeletePlayer {
-  final PlayerRepository repository;
+class DeletePlayerUseCase {
+  final PlayerRepository playerRepository;
 
-  DeletePlayer({required this.repository});
+  DeletePlayerUseCase({required this.playerRepository});
 
   Future<void> call(String playerId) {
-    return repository.deletePlayer(playerId);
+    return playerRepository.deletePlayer(playerId);
   }
 }

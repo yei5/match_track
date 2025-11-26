@@ -9,6 +9,7 @@ import 'package:match_track/features/auth/ui/screens/signup_screen.dart';
 import 'package:match_track/features/players/data/repository/player_repository_impl.dart';
 import 'package:match_track/features/players/data/source/player_remote_data_source.dart';
 import 'package:match_track/features/players/domain/usecases/create_player.dart';
+import 'package:match_track/features/players/domain/usecases/delete_player.dart';
 import 'package:match_track/features/players/domain/usecases/get_players_for_team.dart';
 import 'package:match_track/features/profile/ui/screens/profile_page.dart';
 import 'package:match_track/features/teams/data/repository/team_repository_impl.dart';
@@ -16,6 +17,8 @@ import 'package:match_track/features/teams/data/source/team_remote_data_source.d
 import 'package:match_track/features/teams/domain/usecases/create_team.dart';
 import 'package:match_track/features/teams/domain/usecases/get_team_detail.dart';
 import 'package:match_track/features/teams/domain/usecases/get_teams.dart';
+import 'package:match_track/features/teams/domain/usecases/delete_team_usecase.dart';
+import 'package:match_track/features/teams/domain/usecases/update_team_usecase.dart';
 import 'package:match_track/features/teams/ui/bloc/team_bloc.dart';
 import 'package:match_track/features/teams/ui/screens/team_form_page.dart';
 import 'package:match_track/features/teams/ui/screens/teams_page.dart';
@@ -57,6 +60,10 @@ class MyApp extends StatelessWidget {
             final getTeams = GetTeams(repository: teamRepository);
             final getTeamDetail = GetTeamDetail(repository: teamRepository);
             final createTeamUseCase = CreateTeam(repository: teamRepository);
+            final deleteTeamUseCase =
+                DeleteTeamUseCase(teamRepository: teamRepository);
+            final updateTeamUseCase =
+                UpdateTeamUseCase(teamRepository: teamRepository);
             final authRepository =
                 AuthRepositoryImpl();
             final getCurrentUser =
@@ -70,14 +77,19 @@ class MyApp extends StatelessWidget {
                 GetPlayersForTeam(repository: playerRepository);
             final createPlayerUseCase =
                 CreatePlayer(repository: playerRepository);
+            final deletePlayerUseCase =
+                DeletePlayerUseCase(playerRepository: playerRepository);
 
             return TeamBloc(
               getTeams: getTeams,
               getTeamDetail: getTeamDetail,
               createTeam: createTeamUseCase,
+              deleteTeam: deleteTeamUseCase,
+              updateTeam: updateTeamUseCase,
               getCurrentUser: getCurrentUser,
               getPlayersForTeam: getPlayersForTeam,
               createPlayer: createPlayerUseCase,
+              deletePlayer: deletePlayerUseCase,
             );
           },
         ),

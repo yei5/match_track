@@ -31,3 +31,11 @@ class TeamCreatedState extends TeamState {
 
   TeamCreatedState({required this.team});
 }
+
+class TeamUpdatedState extends TeamState {
+  final Team team;
+
+  TeamUpdatedState({required this.team});
+}
+
+class TeamDeletedState extends TeamState {}
