@@ -268,7 +268,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: 24),              const SizedBox(height: 24),
               
               // Cronómetro
               AnimatedBuilder(
