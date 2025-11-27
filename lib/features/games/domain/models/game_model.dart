@@ -43,72 +43,49 @@ enum GameStatus {
 }
 
 class GameStatistics {
-  final int homePossession;
-  final int awayPossession;
-  final double homeExpectedGoals;
-  final double awayExpectedGoals;
-  final int homeTotalShots;
-  final int awayTotalShots;
-  final int homeShotsOnTarget;
-  final int awayShotsOnTarget;
-  final int homeBigChances;
-  final int awayBigChances;
-  final int homeCorners;
-  final int awayCorners;
-  final int homeOffsides;
-  final int awayOffsides;
-  final int homeCompletedPasses;
-  final int awayCompletedPasses;
+  // Estadísticas simplificadas: solo eventos usados
+  final int homeGoals;
+  final int awayGoals;
+  final int homeYellowCards;
+  final int awayYellowCards;
   final int homeRedCards;
   final int awayRedCards;
-  final int homeAttacks;
-  final int awayAttacks;
+  final int homeFouls;
+  final int awayFouls;
+  final int homeOffsides;
+  final int awayOffsides;
+  final int homeInjuries;
+  final int awayInjuries;
 
   GameStatistics({
-    required this.homePossession,
-    required this.awayPossession,
-    required this.homeExpectedGoals,
-    required this.awayExpectedGoals,
-    required this.homeTotalShots,
-    required this.awayTotalShots,
-    required this.homeShotsOnTarget,
-    required this.awayShotsOnTarget,
-    required this.homeBigChances,
-    required this.awayBigChances,
-    required this.homeCorners,
-    required this.awayCorners,
-    required this.homeOffsides,
-    required this.awayOffsides,
-    required this.homeCompletedPasses,
-    required this.awayCompletedPasses,
+    required this.homeGoals,
+    required this.awayGoals,
+    required this.homeYellowCards,
+    required this.awayYellowCards,
     required this.homeRedCards,
     required this.awayRedCards,
-    required this.homeAttacks,
-    required this.awayAttacks,
+    required this.homeFouls,
+    required this.awayFouls,
+    required this.homeOffsides,
+    required this.awayOffsides,
+    required this.homeInjuries,
+    required this.awayInjuries,
   });
 
   factory GameStatistics.empty() {
     return GameStatistics(
-      homePossession: 50,
-      awayPossession: 50,
-      homeExpectedGoals: 0.0,
-      awayExpectedGoals: 0.0,
-      homeTotalShots: 0,
-      awayTotalShots: 0,
-      homeShotsOnTarget: 0,
-      awayShotsOnTarget: 0,
-      homeBigChances: 0,
-      awayBigChances: 0,
-      homeCorners: 0,
-      awayCorners: 0,
-      homeOffsides: 0,
-      awayOffsides: 0,
-      homeCompletedPasses: 0,
-      awayCompletedPasses: 0,
+      homeGoals: 0,
+      awayGoals: 0,
+      homeYellowCards: 0,
+      awayYellowCards: 0,
       homeRedCards: 0,
       awayRedCards: 0,
-      homeAttacks: 0,
-      awayAttacks: 0,
+      homeFouls: 0,
+      awayFouls: 0,
+      homeOffsides: 0,
+      awayOffsides: 0,
+      homeInjuries: 0,
+      awayInjuries: 0,
     );
   }
 }

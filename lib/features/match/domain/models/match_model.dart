@@ -1,9 +1,9 @@
 import 'team_model.dart';
 import 'match_event_model.dart';
 
-enum MatchStatus { idle, running, paused, finished }
+enum MatchStatus { idle, running, paused, finished, scheduled }
 
-enum HalfTime { firstHalf, secondHalf, extraTime, finished }
+enum HalfTime { firstHalf, halftime, secondHalf, extraTime, finished }
 
 class MatchEvent {
   final String id;
@@ -25,6 +25,8 @@ class MatchModel {
   HalfTime currentHalf;
   final List<MatchEvent> events;
   final List<MatchEventDetail> detailedEvents;
+  final DateTime? scheduledDate;
+  final String? tournamentId;
 
   MatchModel({
     required this.id,
@@ -37,6 +39,8 @@ class MatchModel {
     this.currentHalf = HalfTime.firstHalf,
     List<MatchEvent>? events,
     List<MatchEventDetail>? detailedEvents,
+    this.scheduledDate,
+    this.tournamentId,
   }) : events = events ?? [],
        detailedEvents = detailedEvents ?? [];
 }

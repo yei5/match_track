@@ -419,14 +419,16 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                     color: const Color(0xFF292D32), // Gris oscuro
                     onTap: () {
                       controller.endHalfTime();
+                      String message;
+                      if (controller.match.currentHalf == HalfTime.halftime) {
+                        message = '⏸️ Entretiempo - Cronómetro pausado';
+                      } else if (controller.match.currentHalf == HalfTime.secondHalf) {
+                        message = '▶️ Segundo Tiempo - Cronómetro reanudado';
+                      } else {
+                        message = '🏁 Fin del Partido';
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            controller.match.currentHalf == HalfTime.secondHalf
-                                ? '⏱️ Segundo Tiempo'
-                                : '🏁 Fin del Partido',
-                          ),
-                        ),
+                        SnackBar(content: Text(message)),
                       );
                     },
                   ),

@@ -39,49 +39,35 @@ class MatchStatisticsWidget extends StatelessWidget {
           const SizedBox(height: 20),
           
           _buildStatisticBar(
-            'Posesión',
-            statistics.homePossession,
-            statistics.awayPossession,
-            showPercentage: true,
-          ),
-          const SizedBox(height: 16),
-          
-          _buildStatisticBar(
-            'Goles esperados',
-            (statistics.homeExpectedGoals * 10).toInt(),
-            (statistics.awayExpectedGoals * 10).toInt(),
-            leftValue: statistics.homeExpectedGoals.toStringAsFixed(2),
-            rightValue: statistics.awayExpectedGoals.toStringAsFixed(2),
-          ),
-          const SizedBox(height: 16),
-          
-          _buildStatisticBar(
-            'Remates totales',
-            statistics.homeTotalShots,
-            statistics.awayTotalShots,
-          ),
-          const SizedBox(height: 16),
-          
-          _buildStatisticBar(
-            'Remates al arco',
-            statistics.homeShotsOnTarget,
-            statistics.awayShotsOnTarget,
+            'Goles',
+            statistics.homeGoals,
+            statistics.awayGoals,
             color: const Color(0xFF10B981),
           ),
           const SizedBox(height: 16),
           
           _buildStatisticBar(
-            'Grandes oportunidades',
-            statistics.homeBigChances,
-            statistics.awayBigChances,
+            'Tarjetas Amarillas',
+            statistics.homeYellowCards,
+            statistics.awayYellowCards,
             color: const Color(0xFFF59E0B),
           ),
           const SizedBox(height: 16),
           
           _buildStatisticBar(
-            'Saques de esquina',
-            statistics.homeCorners,
-            statistics.awayCorners,
+            'Tarjetas Rojas',
+            statistics.homeRedCards,
+            statistics.awayRedCards,
+            color: const Color(0xFFEF4444),
+            maxValue: 5,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildStatisticBar(
+            'Faltas',
+            statistics.homeFouls,
+            statistics.awayFouls,
+            maxValue: 30,
           ),
           const SizedBox(height: 16),
           
@@ -93,27 +79,11 @@ class MatchStatisticsWidget extends StatelessWidget {
           const SizedBox(height: 16),
           
           _buildStatisticBar(
-            'Pases completados',
-            statistics.homeCompletedPasses,
-            statistics.awayCompletedPasses,
-            maxValue: 600,
-          ),
-          const SizedBox(height: 16),
-          
-          _buildStatisticBar(
-            'Tarjetas rojas',
-            statistics.homeRedCards,
-            statistics.awayRedCards,
-            color: const Color(0xFFEF4444),
+            'Lesiones',
+            statistics.homeInjuries,
+            statistics.awayInjuries,
+            color: const Color(0xFF6B7280),
             maxValue: 5,
-          ),
-          const SizedBox(height: 16),
-          
-          _buildStatisticBar(
-            'Ataques',
-            statistics.homeAttacks,
-            statistics.awayAttacks,
-            maxValue: 200,
           ),
         ],
       ),

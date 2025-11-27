@@ -13,26 +13,9 @@ class GameCard extends StatelessWidget {
     required this.onTap,
   });
 
-  Color get _borderColor {
-    switch (game.status) {
-      case GameStatus.live:
-        return const Color(0xFF10B981); // Verde
-      case GameStatus.finished:
-        return const Color(0xFFEF4444); // Rojo
-      case GameStatus.scheduled:
-        return const Color(0xFF6B7280); // Gris
-    }
-  }
-
   String get _statusText {
-    switch (game.status) {
-      case GameStatus.live:
-        return "Min ${game.currentMinute}'";
-      case GameStatus.finished:
-        return 'Finalizado';
-      case GameStatus.scheduled:
-        return DateFormat('dd/MM/yyyy HH:mm').format(game.scheduledDate);
-    }
+    // Solo mostrar "Finalizado" ya que todos los partidos están finalizados
+    return 'Finalizado';
   }
 
   @override
@@ -45,12 +28,12 @@ class GameCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _borderColor,
+            color: AppColors.primary,
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: _borderColor.withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -62,7 +45,7 @@ class GameCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: _borderColor.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(14),
                   topRight: Radius.circular(14),
@@ -74,7 +57,7 @@ class GameCard extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: _borderColor,
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -90,7 +73,7 @@ class GameCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: _borderColor,
+                        color: AppColors.primary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -109,35 +92,20 @@ class GameCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _borderColor.withOpacity(0.15),
+                      color: AppColors.primary.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: _borderColor.withOpacity(0.3),
+                        color: AppColors.primary.withOpacity(0.3),
                         width: 1,
                       ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (game.isLive)
-                          Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.only(right: 6),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF10B981),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        Text(
-                          _statusText,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: _borderColor,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      _statusText,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                   

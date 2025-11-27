@@ -150,33 +150,45 @@ class _ProfileContentState extends State<ProfileContent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Accede al sistema de control de partidos en tiempo real',
+                          'Sistema completo de gestión de partidos',
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 16),
+                        
+                        // Botón Agendar Partido
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // Crear partido demo
-                              final home = Team(id: 'home-1', name: 'Icesi');
-                              final away = Team(id: 'away-1', name: 'Javeriana');
-                              final match = MatchModel(
-                                id: 'match-1',
-                                homeTeam: home,
-                                awayTeam: away,
-                              );
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => MatchControlScreen(match: match),
-                                ),
-                              );
+                              Navigator.of(context).pushNamed('/schedule-match');
+                            },
+                            icon: const Icon(Icons.event),
+                            label: const Text('Agendar Partido'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF10B981),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 12),
+                        
+                        // Botón Controlar Partido
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/select-match-to-control');
                             },
                             icon: const Icon(Icons.sports_soccer),
-                            label: const Text('Iniciar Control de Partido'),
+                            label: const Text('Controlar Partido'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,

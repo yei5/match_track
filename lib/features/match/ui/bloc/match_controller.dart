@@ -59,7 +59,7 @@ class MatchController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void stop({bool reset = false}) {
+  Future<void> stop({bool reset = false}) async {
     _ticker?.cancel();
     match.status = MatchStatus.finished;
     if (reset) {
@@ -68,6 +68,16 @@ class MatchController extends ChangeNotifier {
       match.awayScore = 0;
       match.events.clear();
     }
+    
+    // Guardar el partido finalizado
+    if (repository != null) {
+      try {
+        await repository!.saveMatch(match);
+      } catch (e) {
+        debugPrint('Error guardando partido finalizado: $e');
+      }
+    }
+    
     notifyListeners();
   }
 
@@ -103,108 +113,134 @@ class MatchController extends ChangeNotifier {
   Future<void> addDetailedEvent(MatchEventDetail event) async {
     match.detailedEvents.add(event);
     
-    // Si es un gol, actualizar el marcador
-    if (event.type == EventType.goal) {
-      if (event.teamId == match.homeTeam.id) {
-        match.homeScore++;
+    final isHomeTeam = event.teamId == match.homeTeam.id;
+    
+    // Actualizar estadísticas según el tipo de evento
+    switch (event.type) {
+      case EventType.goal:
+        if (isHomeTeam) {
+          match.homeScore++;
+          statistics = GameStatistics(
+            homeGoals: statistics.homeGoals + 1,
+            awayGoals: statistics.awayGoals,
+            homeYellowCards: statistics.homeYellowCards,
+            awayYellowCards: statistics.awayYellowCards,
+            homeRedCards: statistics.homeRedCards,
+            awayRedCards: statistics.awayRedCards,
+            homeFouls: statistics.homeFouls,
+            awayFouls: statistics.awayFouls,
+            homeOffsides: statistics.homeOffsides,
+            awayOffsides: statistics.awayOffsides,
+            homeInjuries: statistics.homeInjuries,
+            awayInjuries: statistics.awayInjuries,
+          );
+        } else {
+          match.awayScore++;
+          statistics = GameStatistics(
+            homeGoals: statistics.homeGoals,
+            awayGoals: statistics.awayGoals + 1,
+            homeYellowCards: statistics.homeYellowCards,
+            awayYellowCards: statistics.awayYellowCards,
+            homeRedCards: statistics.homeRedCards,
+            awayRedCards: statistics.awayRedCards,
+            homeFouls: statistics.homeFouls,
+            awayFouls: statistics.awayFouls,
+            homeOffsides: statistics.homeOffsides,
+            awayOffsides: statistics.awayOffsides,
+            homeInjuries: statistics.homeInjuries,
+            awayInjuries: statistics.awayInjuries,
+          );
+        }
+        break;
+        
+      case EventType.yellowCard:
         statistics = GameStatistics(
-          homePossession: statistics.homePossession,
-          awayPossession: statistics.awayPossession,
-          homeExpectedGoals: statistics.homeExpectedGoals,
-          awayExpectedGoals: statistics.awayExpectedGoals,
-          homeTotalShots: statistics.homeTotalShots + 1,
-          awayTotalShots: statistics.awayTotalShots,
-          homeShotsOnTarget: statistics.homeShotsOnTarget + 1,
-          awayShotsOnTarget: statistics.awayShotsOnTarget,
-          homeBigChances: statistics.homeBigChances,
-          awayBigChances: statistics.awayBigChances,
-          homeCorners: statistics.homeCorners,
-          awayCorners: statistics.awayCorners,
-          homeOffsides: statistics.homeOffsides,
-          awayOffsides: statistics.awayOffsides,
-          homeCompletedPasses: statistics.homeCompletedPasses,
-          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeGoals: statistics.homeGoals,
+          awayGoals: statistics.awayGoals,
+          homeYellowCards: isHomeTeam ? statistics.homeYellowCards + 1 : statistics.homeYellowCards,
+          awayYellowCards: isHomeTeam ? statistics.awayYellowCards : statistics.awayYellowCards + 1,
           homeRedCards: statistics.homeRedCards,
           awayRedCards: statistics.awayRedCards,
-          homeAttacks: statistics.homeAttacks + 1,
-          awayAttacks: statistics.awayAttacks,
-        );
-      } else if (event.teamId == match.awayTeam.id) {
-        match.awayScore++;
-        statistics = GameStatistics(
-          homePossession: statistics.homePossession,
-          awayPossession: statistics.awayPossession,
-          homeExpectedGoals: statistics.homeExpectedGoals,
-          awayExpectedGoals: statistics.awayExpectedGoals,
-          homeTotalShots: statistics.homeTotalShots,
-          awayTotalShots: statistics.awayTotalShots + 1,
-          homeShotsOnTarget: statistics.homeShotsOnTarget,
-          awayShotsOnTarget: statistics.awayShotsOnTarget + 1,
-          homeBigChances: statistics.homeBigChances,
-          awayBigChances: statistics.awayBigChances,
-          homeCorners: statistics.homeCorners,
-          awayCorners: statistics.awayCorners,
+          homeFouls: statistics.homeFouls,
+          awayFouls: statistics.awayFouls,
           homeOffsides: statistics.homeOffsides,
           awayOffsides: statistics.awayOffsides,
-          homeCompletedPasses: statistics.homeCompletedPasses,
-          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeInjuries: statistics.homeInjuries,
+          awayInjuries: statistics.awayInjuries,
+        );
+        break;
+        
+      case EventType.redCard:
+        statistics = GameStatistics(
+          homeGoals: statistics.homeGoals,
+          awayGoals: statistics.awayGoals,
+          homeYellowCards: statistics.homeYellowCards,
+          awayYellowCards: statistics.awayYellowCards,
+          homeRedCards: isHomeTeam ? statistics.homeRedCards + 1 : statistics.homeRedCards,
+          awayRedCards: isHomeTeam ? statistics.awayRedCards : statistics.awayRedCards + 1,
+          homeFouls: statistics.homeFouls,
+          awayFouls: statistics.awayFouls,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeInjuries: statistics.homeInjuries,
+          awayInjuries: statistics.awayInjuries,
+        );
+        break;
+        
+      case EventType.foul:
+        statistics = GameStatistics(
+          homeGoals: statistics.homeGoals,
+          awayGoals: statistics.awayGoals,
+          homeYellowCards: statistics.homeYellowCards,
+          awayYellowCards: statistics.awayYellowCards,
           homeRedCards: statistics.homeRedCards,
           awayRedCards: statistics.awayRedCards,
-          homeAttacks: statistics.homeAttacks,
-          awayAttacks: statistics.awayAttacks + 1,
-        );
-      }
-    }
-
-    // Si es tarjeta roja, actualizar estadísticas
-    if (event.type == EventType.redCard) {
-      if (event.teamId == match.homeTeam.id) {
-        statistics = GameStatistics(
-          homePossession: statistics.homePossession,
-          awayPossession: statistics.awayPossession,
-          homeExpectedGoals: statistics.homeExpectedGoals,
-          awayExpectedGoals: statistics.awayExpectedGoals,
-          homeTotalShots: statistics.homeTotalShots,
-          awayTotalShots: statistics.awayTotalShots,
-          homeShotsOnTarget: statistics.homeShotsOnTarget,
-          awayShotsOnTarget: statistics.awayShotsOnTarget,
-          homeBigChances: statistics.homeBigChances,
-          awayBigChances: statistics.awayBigChances,
-          homeCorners: statistics.homeCorners,
-          awayCorners: statistics.awayCorners,
+          homeFouls: isHomeTeam ? statistics.homeFouls + 1 : statistics.homeFouls,
+          awayFouls: isHomeTeam ? statistics.awayFouls : statistics.awayFouls + 1,
           homeOffsides: statistics.homeOffsides,
           awayOffsides: statistics.awayOffsides,
-          homeCompletedPasses: statistics.homeCompletedPasses,
-          awayCompletedPasses: statistics.awayCompletedPasses,
-          homeRedCards: statistics.homeRedCards + 1,
-          awayRedCards: statistics.awayRedCards,
-          homeAttacks: statistics.homeAttacks,
-          awayAttacks: statistics.awayAttacks,
+          homeInjuries: statistics.homeInjuries,
+          awayInjuries: statistics.awayInjuries,
         );
-      } else {
+        break;
+        
+      case EventType.offside:
         statistics = GameStatistics(
-          homePossession: statistics.homePossession,
-          awayPossession: statistics.awayPossession,
-          homeExpectedGoals: statistics.homeExpectedGoals,
-          awayExpectedGoals: statistics.awayExpectedGoals,
-          homeTotalShots: statistics.homeTotalShots,
-          awayTotalShots: statistics.awayTotalShots,
-          homeShotsOnTarget: statistics.homeShotsOnTarget,
-          awayShotsOnTarget: statistics.awayShotsOnTarget,
-          homeBigChances: statistics.homeBigChances,
-          awayBigChances: statistics.awayBigChances,
-          homeCorners: statistics.homeCorners,
-          awayCorners: statistics.awayCorners,
-          homeOffsides: statistics.homeOffsides,
-          awayOffsides: statistics.awayOffsides,
-          homeCompletedPasses: statistics.homeCompletedPasses,
-          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeGoals: statistics.homeGoals,
+          awayGoals: statistics.awayGoals,
+          homeYellowCards: statistics.homeYellowCards,
+          awayYellowCards: statistics.awayYellowCards,
           homeRedCards: statistics.homeRedCards,
-          awayRedCards: statistics.awayRedCards + 1,
-          homeAttacks: statistics.homeAttacks,
-          awayAttacks: statistics.awayAttacks,
+          awayRedCards: statistics.awayRedCards,
+          homeFouls: statistics.homeFouls,
+          awayFouls: statistics.awayFouls,
+          homeOffsides: isHomeTeam ? statistics.homeOffsides + 1 : statistics.homeOffsides,
+          awayOffsides: isHomeTeam ? statistics.awayOffsides : statistics.awayOffsides + 1,
+          homeInjuries: statistics.homeInjuries,
+          awayInjuries: statistics.awayInjuries,
         );
-      }
+        break;
+        
+      case EventType.injury:
+        statistics = GameStatistics(
+          homeGoals: statistics.homeGoals,
+          awayGoals: statistics.awayGoals,
+          homeYellowCards: statistics.homeYellowCards,
+          awayYellowCards: statistics.awayYellowCards,
+          homeRedCards: statistics.homeRedCards,
+          awayRedCards: statistics.awayRedCards,
+          homeFouls: statistics.homeFouls,
+          awayFouls: statistics.awayFouls,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeInjuries: isHomeTeam ? statistics.homeInjuries + 1 : statistics.homeInjuries,
+          awayInjuries: isHomeTeam ? statistics.awayInjuries : statistics.awayInjuries + 1,
+        );
+        break;
+        
+      default:
+        // Otros eventos no afectan las estadísticas
+        break;
     }
     
     // Guardar en repositorio si está disponible
@@ -249,7 +285,9 @@ class MatchController extends ChangeNotifier {
   
   void endHalfTime() {
     if (match.currentHalf == HalfTime.firstHalf) {
-      match.currentHalf = HalfTime.secondHalf;
+      // Finalizar el primer tiempo y pausar el cronómetro
+      pause();
+      match.currentHalf = HalfTime.halftime;
       final event = MatchEventDetail(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         type: EventType.halfTime,
@@ -258,7 +296,12 @@ class MatchController extends ChangeNotifier {
         description: 'Entretiempo',
       );
       match.detailedEvents.add(event);
+    } else if (match.currentHalf == HalfTime.halftime) {
+      // Iniciar el segundo tiempo y reanudar el cronómetro
+      match.currentHalf = HalfTime.secondHalf;
+      start();
     } else if (match.currentHalf == HalfTime.secondHalf) {
+      // Finalizar el partido
       match.currentHalf = HalfTime.finished;
       final event = MatchEventDetail(
         id: DateTime.now().millisecondsSinceEpoch.toString(),

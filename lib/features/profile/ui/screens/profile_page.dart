@@ -18,7 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: const CustomHeader(title: 'Perfil', showBackButton: false),
       body: const SafeArea(child: ProfileContent()),
-      bottomNavigationBar: CustomBottomNavBar(
+      bottomNavigationBar: MinimizableNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
