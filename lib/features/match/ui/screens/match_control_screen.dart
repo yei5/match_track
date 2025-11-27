@@ -11,6 +11,10 @@ import '../../../../core/theme/app_colors_new.dart';
 import '../../../../core/domain/model/player.dart' as CorePlayer;
 import '../../../players/data/repository/player_repository_impl.dart';
 import '../../../players/data/source/player_remote_data_source.dart';
+import '../../../tournaments/data/repository/tournament_repository_impl.dart';
+import '../../../tournaments/data/source/tournament_remote_data_source.dart';
+import '../../../tournaments/domain/entities/tournament_entity.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchControlScreen extends StatefulWidget {
   final MatchModel match;
@@ -24,9 +28,15 @@ class MatchControlScreen extends StatefulWidget {
 class _MatchControlScreenState extends State<MatchControlScreen> {
   late MatchController controller;
   final _playerRepository = PlayerRepositoryImpl(remoteDataSource: PlayerRemoteDataSourceImpl());
+  final _tournamentRepository = TournamentRepositoryImpl(
+    remoteDataSource: TournamentRemoteDataSourceImpl(
+      supabaseClient: Supabase.instance.client,
+    ),
+  );
   
   List<CorePlayer.Player> _homePlayers = [];
   List<CorePlayer.Player> _awayPlayers = [];
+  TournamentEntity? _tournament;
   bool _loadingPlayers = true;
 
   @override
@@ -34,6 +44,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
     super.initState();
     controller = MatchController(match: widget.match);
     _loadPlayers();
+    _loadTournament();
   }
 
   Future<void> _loadPlayers() async {
@@ -53,6 +64,17 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
           SnackBar(content: Text('Error cargando jugadores: $e')),
         );
       }
+    }
+  }
+
+  Future<void> _loadTournament() async {
+    if (widget.match.tournamentId == null) return;
+    
+    try {
+      final tournament = await _tournamentRepository.getTournamentDetail(widget.match.tournamentId!);
+      setState(() => _tournament = tournament);
+    } catch (e) {
+      // No mostrar error si no se encuentra el torneo
     }
   }
 
@@ -161,7 +183,37 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                       ),
                     ],
                   ),
-                  child: Row(
+                  child: Column(
+                    children: [
+                      // Nombre del torneo o Amistoso
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _tournament != null ? Icons.emoji_events : Icons.handshake,
+                              size: 16,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _tournament?.name ?? 'Amistoso',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       // Equipo Local
@@ -229,6 +281,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         ),
                       ),
                     ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -282,23 +336,93 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
               
               const SizedBox(height: 24),
               
-              // Controles del Juego
-              const Text(
-                'Control del Juego',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _controlButton(Icons.play_arrow, () => controller.start()),
-                  _controlButton(Icons.pause, () => controller.pause()),
-                  _controlButton(Icons.stop, () => controller.stop(reset: false)),
-                ],
+              // Botón único de control de tiempos
+              AnimatedBuilder(
+                animation: controller,
+                builder: (_, __) {
+                  String buttonText;
+                  IconData buttonIcon;
+                  Color buttonColor;
+                  VoidCallback onPressed;
+
+                  switch (controller.match.currentHalf) {
+                    case HalfTime.firstHalf:
+                      if (controller.match.elapsedSeconds == 0) {
+                        // Partido no iniciado
+                        buttonText = 'Iniciar Partido';
+                        buttonIcon = Icons.play_arrow;
+                        buttonColor = const Color(0xFF10B981); // Verde
+                        onPressed = () {
+                          controller.start();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('⚽ Primer Tiempo Iniciado')),
+                          );
+                        };
+                      } else {
+                        // Primer tiempo en curso
+                        buttonText = 'Finalizar Primer Tiempo';
+                        buttonIcon = Icons.pause_circle_filled;
+                        buttonColor = const Color(0xFFF59E0B); // Amarillo
+                        onPressed = () {
+                          controller.endHalfTime();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('⏸️ Entretiempo - Cronómetro pausado')),
+                          );
+                        };
+                      }
+                      break;
+                    case HalfTime.halftime:
+                      buttonText = 'Iniciar Segundo Tiempo';
+                      buttonIcon = Icons.play_arrow;
+                      buttonColor = const Color(0xFF10B981); // Verde
+                      onPressed = () {
+                        controller.endHalfTime();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('▶️ Segundo Tiempo - Cronómetro reanudado')),
+                        );
+                      };
+                      break;
+                    case HalfTime.secondHalf:
+                      buttonText = 'Finalizar Partido';
+                      buttonIcon = Icons.stop_circle;
+                      buttonColor = const Color(0xFFEF4444); // Rojo
+                      onPressed = () {
+                        controller.endHalfTime();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('🏁 Fin del Partido')),
+                        );
+                      };
+                      break;
+                    default:
+                      buttonText = 'Partido Finalizado';
+                      buttonIcon = Icons.check_circle;
+                      buttonColor = Colors.grey;
+                      onPressed = () {};
+                  }
+
+                  return ElevatedButton.icon(
+                    onPressed: controller.match.currentHalf == HalfTime.finished ? null : onPressed,
+                    icon: Icon(buttonIcon, size: 28),
+                    label: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 3,
+                      disabledBackgroundColor: Colors.grey[300],
+                      disabledForegroundColor: Colors.grey[600],
+                    ),
+                  );
+                },
               ),
               
               const SizedBox(height: 32),
@@ -450,25 +574,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                           );
                         }
                       }
-                    },
-                  ),
-                  // Fin de Tiempo
-                  _actionButton(
-                    icon: Icons.circle_outlined,
-                    color: const Color(0xFF292D32), // Gris oscuro
-                    onTap: () {
-                      controller.endHalfTime();
-                      String message;
-                      if (controller.match.currentHalf == HalfTime.halftime) {
-                        message = '⏸️ Entretiempo - Cronómetro pausado';
-                      } else if (controller.match.currentHalf == HalfTime.secondHalf) {
-                        message = '▶️ Segundo Tiempo - Cronómetro reanudado';
-                      } else {
-                        message = '🏁 Fin del Partido';
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(message)),
-                      );
                     },
                   ),
                 ],
