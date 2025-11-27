@@ -4,8 +4,8 @@ import '../../../teams/data/repository/team_repository_impl.dart';
 import '../../../teams/domain/usecases/get_teams.dart';
 import '../../../../core/domain/model/team.dart';
 import '../../../../core/theme/app_colors_new.dart';
-import '../../../match/domain/models/match_model.dart';
-import '../../../match/ui/screens/match_control_screen.dart';
+import '../../domain/models/match_model.dart';
+import 'match_control_screen.dart';
 
 class CreateMatchScreen extends StatefulWidget {
   const CreateMatchScreen({super.key});

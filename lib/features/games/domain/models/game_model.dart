@@ -1,6 +1,6 @@
 import '../../../match/domain/models/match_model.dart';
 import '../../../match/domain/models/match_event_model.dart';
-import '../../../match/domain/models/team_model.dart';
+import '../../../../core/domain/model/team.dart';
 
 class GameModel {
   final String id;

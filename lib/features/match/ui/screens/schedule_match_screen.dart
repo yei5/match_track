@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../domain/models/match_model.dart';
-import '../../../core/domain/model/team.dart';
+import '../../../../core/domain/model/team.dart';
 import '../../../teams/data/repository/team_repository_impl.dart';
 import '../../../teams/data/source/team_remote_data_source.dart';
 import '../../data/repository/match_repository.dart';
@@ -37,7 +37,7 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final teams = await _teamRepository.getTeams();
+      final teams = await _teamRepository.getTeams('temp-user-id');
       
       setState(() {
         _teams = teams;
@@ -295,8 +295,8 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         borderRadius: BorderRadius.circular(12),
-                        items: _teams.map((team) {
-                          return DropdownMenuItem(
+                        items: _teams.map<DropdownMenuItem<Team>>((team) {
+                          return DropdownMenuItem<Team>(
                             value: team,
                             child: Text(team.name),
                           );
@@ -333,8 +333,8 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         borderRadius: BorderRadius.circular(12),
-                        items: _teams.map((team) {
-                          return DropdownMenuItem(
+                        items: _teams.map<DropdownMenuItem<Team>>((team) {
+                          return DropdownMenuItem<Team>(
                             value: team,
                             child: Text(team.name),
                           );
