@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:match_track/core/theme/app_colors.dart';
@@ -178,6 +178,12 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         'team1_id': _selectedTeamIds.isNotEmpty ? _selectedTeamIds[0] : null,
         'team2_id': _selectedTeamIds.length > 1 ? _selectedTeamIds[1] : null,
       };
+
+      debugPrint('🏆 CREATING TOURNAMENT:');
+      debugPrint('   Selected teams count: ${_selectedTeamIds.length}');
+      debugPrint('   Team1 ID: ${tournamentData['team1_id']}');
+      debugPrint('   Team2 ID: ${tournamentData['team2_id']}');
+      debugPrint('   Tournament name: ${tournamentData['name']}');
 
       await Supabase.instance.client.from('tournaments').insert(tournamentData);
 

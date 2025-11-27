@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 import 'package:match_track/core/domain/model/team.dart';
@@ -42,21 +43,48 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
       final team1Id = widget.tournament['team1_id']?.toString();
       final team2Id = widget.tournament['team2_id']?.toString();
       
+      debugPrint('🔍 TOURNAMENT DEBUG:');
+      debugPrint('   Tournament ID: ${widget.tournament['id']}');
+      debugPrint('   Team1 ID from DB: $team1Id');
+      debugPrint('   Team2 ID from DB: $team2Id');
+      debugPrint('   Total teams loaded: ${allTeams.length}');
+      
       List<Team> tournamentTeams = [];
+      
+      // Buscar team1
       if (team1Id != null && team1Id.isNotEmpty && team1Id != 'null') {
         final team = allTeams.where((t) => t.id == team1Id).firstOrNull;
-        if (team != null) tournamentTeams.add(team);
+        if (team != null) {
+          tournamentTeams.add(team);
+          debugPrint('   ✅ Found Team 1: ${team.name}');
+        } else {
+          debugPrint('   ❌ Team 1 not found in user teams');
+        }
+      } else {
+        debugPrint('   ⚠️ Team1 ID is null or empty');
       }
+      
+      // Buscar team2
       if (team2Id != null && team2Id.isNotEmpty && team2Id != 'null' && team2Id != team1Id) {
         final team = allTeams.where((t) => t.id == team2Id).firstOrNull;
-        if (team != null) tournamentTeams.add(team);
+        if (team != null) {
+          tournamentTeams.add(team);
+          debugPrint('   ✅ Found Team 2: ${team.name}');
+        } else {
+          debugPrint('   ❌ Team 2 not found in user teams');
+        }
+      } else {
+        debugPrint('   ⚠️ Team2 ID is null, empty, or same as Team1');
       }
+      
+      debugPrint('   📊 Total tournament teams: ${tournamentTeams.length}');
 
       setState(() {
         _teams = tournamentTeams;
         _loadingTeams = false;
       });
     } catch (e) {
+      debugPrint('   ❌ ERROR loading teams: $e');
       setState(() => _loadingTeams = false);
     }
   }
