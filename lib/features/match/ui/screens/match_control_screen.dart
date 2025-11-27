@@ -84,25 +84,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
     super.dispose();
   }
 
-  Widget _controlButton(IconData icon, VoidCallback onTap) {
-    return Material(
-      color: AppColors.primary,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(icon, color: Colors.white, size: 40),
-        ),
-      ),
-    );
-  }
-
   Widget _actionButton({
     required IconData icon,
     required Color color,
