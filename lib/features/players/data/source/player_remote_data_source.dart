@@ -20,7 +20,7 @@ class PlayerRemoteDataSourceImpl implements PlayerRemoteDataSource {
         .single();
     return Player.fromJson(response);
     } catch (e) {
-      print('Error creating player: $e');
+      debugPrint('Error creating player: $e');
       rethrow;
     }
     

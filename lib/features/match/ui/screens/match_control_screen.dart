@@ -37,7 +37,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
   List<CorePlayer.Player> _homePlayers = [];
   List<CorePlayer.Player> _awayPlayers = [];
   TournamentEntity? _tournament;
-  bool _loadingPlayers = true;
 
   @override
   void initState() {
@@ -55,10 +54,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
       setState(() {
         _homePlayers = homePlayers;
         _awayPlayers = awayPlayers;
-        _loadingPlayers = false;
       });
     } catch (e) {
-      setState(() => _loadingPlayers = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error cargando jugadores: $e')),

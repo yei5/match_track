@@ -101,7 +101,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       for (final player in event.players) {
         final playerWithTeamId =
             Player.copyWith(player: player, team_id: createdTeam.id);
-        print( "Creating player with team ID: ${playerWithTeamId.toJson()}");
+        debugPrint("Creating player with team ID: ${playerWithTeamId.toJson()}");
         await createPlayer.call(playerWithTeamId);
       }
 
