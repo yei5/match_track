@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
-import '../../domain/models/team_model.dart';
+import '../../../../core/domain/model/team.dart';
 
 class SubstitutionDialog extends StatefulWidget {
   final Team homeTeam;

@@ -1,4 +1,4 @@
-import '../../../core/domain/model/team.dart';
+import '../../../../core/domain/model/team.dart';
 import 'match_event_model.dart';
 
 enum MatchStatus { idle, running, paused, finished, scheduled }

@@ -4,7 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_team_card.dart';
 import '../../../../core/widgets/custom_tournament_card.dart';
 import '../../../../core/widgets/custom_button.dart';
-import '../../../match/domain/models/team_model.dart';
+import '../../../../core/domain/model/team.dart';
 import '../../../match/domain/models/match_model.dart';
 import '../../../match/ui/screens/match_control_screen.dart';
 
