@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
-import '../../../../core/domain/model/player.dart';
+import '../../../../core/domain/model/player.dart' as CorePlayer;
 
 class SubstitutionDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
-  final List<Player> homePlayers;
-  final List<Player> awayPlayers;
+  final List<CorePlayer.Player> homePlayers;
+  final List<CorePlayer.Player> awayPlayers;
   final int currentMinute;
 
   const SubstitutionDialog({
@@ -27,8 +27,8 @@ class _SubstitutionDialogState extends State<SubstitutionDialog> {
   String? selectedTeamId;
   final _numOutCtrl = TextEditingController();
   final _numInCtrl = TextEditingController();
-  Player? _playerOut;
-  Player? _playerIn;
+  CorePlayer.Player? _playerOut;
+  CorePlayer.Player? _playerIn;
 
   @override
   void dispose() {
@@ -164,12 +164,12 @@ class _SubstitutionDialogState extends State<SubstitutionDialog> {
               type: EventType.substitution,
               minute: widget.currentMinute,
               teamId: selectedTeamId!,
-              playerOut: MatchEventModel.Player(
+              playerOut: Player(
                 name: _playerOut!.name,
                 number: _playerOut!.jersey_number,
                 teamId: selectedTeamId!,
               ),
-              playerIn: MatchEventModel.Player(
+              playerIn: Player(
                 name: _playerIn!.name,
                 number: _playerIn!.jersey_number,
                 teamId: selectedTeamId!,

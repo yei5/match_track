@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 import 'package:match_track/core/widgets/app_header.dart';
-import 'package:match_track/core/widgets/minimizable_nav_bar.dart';
+import 'package:match_track/core/widgets/standard_nav_bar.dart';
 import 'package:match_track/features/teams/ui/bloc/team_bloc.dart';
 import 'package:match_track/features/teams/ui/bloc/team_event.dart';
 import 'package:match_track/features/teams/ui/bloc/team_state.dart';

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
-import '../../../../core/domain/model/player.dart';
+import '../../../../core/domain/model/player.dart' as CorePlayer;
 
 class CardDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
-  final List<Player> homePlayers;
-  final List<Player> awayPlayers;
+  final List<CorePlayer.Player> homePlayers;
+  final List<CorePlayer.Player> awayPlayers;
   final int currentMinute;
   final bool isRed; // true = roja, false = amarilla
 
@@ -28,7 +28,7 @@ class CardDialog extends StatefulWidget {
 class _CardDialogState extends State<CardDialog> {
   String? selectedTeamId;
   final TextEditingController _playerNumberController = TextEditingController();
-  Player? _foundPlayer;
+  CorePlayer.Player? _foundPlayer;
 
   @override
   void dispose() {
@@ -143,7 +143,7 @@ class _CardDialogState extends State<CardDialog> {
                     type: widget.isRed ? EventType.redCard : EventType.yellowCard,
                     minute: widget.currentMinute,
                     teamId: selectedTeamId!,
-                    player: MatchEventModel.Player(
+                    player: Player(
                       name: _foundPlayer!.name,
                       number: _foundPlayer!.jersey_number,
                       teamId: selectedTeamId!,

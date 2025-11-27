@@ -78,6 +78,25 @@ class _SelectMatchToControlScreenState extends State<SelectMatchToControlScreen>
                     },
                   ),
                 ),
+      bottomNavigationBar: StandardNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/games');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/tournaments');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/teams');
+              break;
+            case 3:
+              Navigator.pushReplacementNamed(context, '/profile');
+              break;
+          }
+        },
+      ),
     );
   }
 
@@ -336,25 +355,6 @@ class _SelectMatchToControlScreenState extends State<SelectMatchToControlScreen>
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: StandardNavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/games');
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, '/tournaments');
-              break;
-            case 2:
-              Navigator.pushReplacementNamed(context, '/teams');
-              break;
-            case 3:
-              Navigator.pushReplacementNamed(context, '/profile');
-              break;
-          }
-        },
       ),
     );
   }

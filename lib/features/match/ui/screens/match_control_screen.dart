@@ -8,7 +8,7 @@ import '../widgets/substitution_dialog.dart';
 import '../widgets/interruption_dialog.dart';
 import '../widgets/match_statistics_widget.dart';
 import '../../../../core/theme/app_colors_new.dart';
-import '../../../../core/domain/model/player.dart';
+import '../../../../core/domain/model/player.dart' as CorePlayer;
 import '../../../players/data/repository/player_repository_impl.dart';
 import '../../../players/data/source/player_remote_data_source.dart';
 
@@ -25,8 +25,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
   late MatchController controller;
   final _playerRepository = PlayerRepositoryImpl(remoteDataSource: PlayerRemoteDataSourceImpl());
   
-  List<Player> _homePlayers = [];
-  List<Player> _awayPlayers = [];
+  List<CorePlayer.Player> _homePlayers = [];
+  List<CorePlayer.Player> _awayPlayers = [];
   bool _loadingPlayers = true;
 
   @override

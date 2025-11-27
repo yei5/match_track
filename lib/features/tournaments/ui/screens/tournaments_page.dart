@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:match_track/core/theme/app_colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:match_track/core/widgets/app_header.dart';
-import 'package:match_track/core/widgets/minimizable_nav_bar.dart';
+import 'package:match_track/core/widgets/standard_nav_bar.dart';
 import '../widgets/tournament_filter_bar.dart';
 import '../widgets/tournament_card.dart';
 import '../widgets/empty_tournaments_state.dart';

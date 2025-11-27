@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
-import '../../../../core/domain/model/player.dart';
+import '../../../../core/domain/model/player.dart' as CorePlayer;
 
 class GoalDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
-  final List<Player> homePlayers;
-  final List<Player> awayPlayers;
+  final List<CorePlayer.Player> homePlayers;
+  final List<CorePlayer.Player> awayPlayers;
   final int currentMinute;
 
   const GoalDialog({
@@ -28,8 +28,8 @@ class _GoalDialogState extends State<GoalDialog> {
   final TextEditingController _playerNumberController = TextEditingController();
   final TextEditingController _assistNumberController = TextEditingController();
   bool includeAssist = false;
-  Player? _foundPlayer;
-  Player? _foundAssist;
+  CorePlayer.Player? _foundPlayer;
+  CorePlayer.Player? _foundAssist;
 
   @override
   void dispose() {
@@ -195,13 +195,13 @@ class _GoalDialogState extends State<GoalDialog> {
                     type: EventType.goal,
                     minute: widget.currentMinute,
                     teamId: selectedTeamId!,
-                    scorer: MatchEventModel.Player(
+                    scorer: Player(
                       name: _foundPlayer!.name,
                       number: _foundPlayer!.jersey_number,
                       teamId: selectedTeamId!,
                     ),
                     assist: includeAssist && _foundAssist != null
-                        ? MatchEventModel.Player(
+                        ? Player(
                             name: _foundAssist!.name,
                             number: _foundAssist!.jersey_number,
                             teamId: selectedTeamId!,
