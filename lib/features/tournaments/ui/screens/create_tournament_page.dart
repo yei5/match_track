@@ -175,6 +175,8 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                   .toIso8601String()
                   .split('T')[0],
         'image_url': imageUrl,
+        'team1_id': _selectedTeamIds.isNotEmpty ? _selectedTeamIds[0] : null,
+        'team2_id': _selectedTeamIds.length > 1 ? _selectedTeamIds[1] : null,
       };
 
       await Supabase.instance.client.from('tournaments').insert(tournamentData);

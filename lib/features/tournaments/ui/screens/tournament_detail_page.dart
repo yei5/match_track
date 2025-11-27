@@ -43,11 +43,11 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
       final team2Id = widget.tournament['team2_id']?.toString();
       
       List<Team> tournamentTeams = [];
-      if (team1Id != null && team1Id.isNotEmpty) {
+      if (team1Id != null && team1Id.isNotEmpty && team1Id != 'null') {
         final team = allTeams.where((t) => t.id == team1Id).firstOrNull;
         if (team != null) tournamentTeams.add(team);
       }
-      if (team2Id != null && team2Id.isNotEmpty && team2Id != team1Id) {
+      if (team2Id != null && team2Id.isNotEmpty && team2Id != 'null' && team2Id != team1Id) {
         final team = allTeams.where((t) => t.id == team2Id).firstOrNull;
         if (team != null) tournamentTeams.add(team);
       }
@@ -201,41 +201,122 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
                         ),
                         const SizedBox(height: 12),
                         _loadingTeams
-                            ? const Center(child: CircularProgressIndicator())
+                            ? const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
                             : _teams.isEmpty
-                                ? const Text(
-                                    'No hay equipos registrados en este torneo',
-                                    style: TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontStyle: FontStyle.italic,
+                                ? Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.surface,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.textSecondary.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          color: AppColors.textSecondary,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            'No hay equipos inscritos en este torneo',
+                                            style: TextStyle(
+                                              color: AppColors.textSecondary,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   )
                                 : Column(
-                                    children: _teams.map((team) {
+                                    children: _teams.asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final team = entry.value;
                                       return Container(
-                                        margin: const EdgeInsets.only(bottom: 8),
-                                        padding: const EdgeInsets.all(12),
+                                        margin: const EdgeInsets.only(bottom: 12),
+                                        padding: const EdgeInsets.all(16),
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
-                                          color: AppColors.primary.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(16),
+                                          color: Colors.white,
                                           border: Border.all(
                                             color: AppColors.primary.withOpacity(0.3),
+                                            width: 2,
                                           ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.primary.withOpacity(0.1),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
                                         ),
                                         child: Row(
                                           children: [
-                                            const Icon(
-                                              Icons.groups,
-                                              color: AppColors.primary,
-                                              size: 24,
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primary,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  team.name.substring(0, 1).toUpperCase(),
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                            const SizedBox(width: 12),
+                                            const SizedBox(width: 16),
                                             Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    team.name,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: AppColors.textPrimary,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    team.category,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: AppColors.textSecondary,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 12,
+                                                vertical: 6,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primary.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
                                               child: Text(
-                                                team.name,
+                                                'Equipo ${index + 1}',
                                                 style: const TextStyle(
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
                                                   color: AppColors.primary,
                                                 ),
                                               ),
