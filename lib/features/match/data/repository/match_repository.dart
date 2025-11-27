@@ -1,72 +1,51 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/models/match_model.dart';
 import '../../domain/models/match_event_model.dart';
+import '../source/match_remote_data_source.dart';
 
 class MatchRepository {
-  // Almacenamiento en memoria (puede ser reemplazado por Supabase)
-  static final Map<String, MatchModel> _matches = {};
-  static final Map<String, List<MatchEventDetail>> _matchEvents = {};
+  late final MatchRemoteDataSource _remoteDataSource;
+
+  MatchRepository() {
+    _remoteDataSource = MatchRemoteDataSourceImpl(
+      supabaseClient: Supabase.instance.client,
+    );
+  }
 
   Future<void> saveMatch(MatchModel match) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _matches[match.id] = match;
+    await _remoteDataSource.saveMatch(match);
   }
 
   Future<MatchModel?> getMatch(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return _matches[id];
+    return await _remoteDataSource.getMatch(id);
   }
 
   Future<List<MatchModel>> listMatches() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return _matches.values.toList();
+    return await _remoteDataSource.listMatches();
   }
 
   Future<List<MatchModel>> getScheduledMatches() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return _matches.values
-        .where((match) => match.status == MatchStatus.scheduled)
-        .toList()
-      ..sort((a, b) {
-        final dateA = a.scheduledDate ?? DateTime.now();
-        final dateB = b.scheduledDate ?? DateTime.now();
-        return dateA.compareTo(dateB);
-      });
+    return await _remoteDataSource.getScheduledMatches();
   }
 
   Future<List<MatchModel>> getFinishedMatches() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return _matches.values
-        .where((match) => match.status == MatchStatus.finished)
-        .toList()
-      ..sort((a, b) {
-        final dateA = a.scheduledDate ?? DateTime.now();
-        final dateB = b.scheduledDate ?? DateTime.now();
-        return dateB.compareTo(dateA); // Más reciente primero
-      });
+    return await _remoteDataSource.getFinishedMatches();
   }
 
   Future<void> deleteMatch(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _matches.remove(id);
-    _matchEvents.remove(id);
+    await _remoteDataSource.deleteMatch(id);
   }
   
   // Métodos para eventos
   Future<void> saveEvent(MatchEventDetail event, String matchId) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (_matchEvents[matchId] == null) {
-      _matchEvents[matchId] = [];
-    }
-    _matchEvents[matchId]!.add(event);
+    await _remoteDataSource.saveEvent(event, matchId);
   }
 
   Future<void> deleteEvent(String eventId, String matchId) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _matchEvents[matchId]?.removeWhere((e) => e.id == eventId);
+    await _remoteDataSource.deleteEvent(eventId, matchId);
   }
 
   Future<List<MatchEventDetail>> getMatchEvents(String matchId) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return _matchEvents[matchId] ?? [];
+    return await _remoteDataSource.getMatchEvents(matchId);
   }
 }
