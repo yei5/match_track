@@ -157,7 +157,7 @@ class MatchController extends ChangeNotifier {
     }
 
     // Si es tarjeta roja, actualizar estadísticas
-    if (event.type == EventType.card && event.cardType == CardType.red) {
+    if (event.type == EventType.redCard) {
       if (event.teamId == match.homeTeam.id) {
         statistics = GameStatistics(
           homePossession: statistics.homePossession,
