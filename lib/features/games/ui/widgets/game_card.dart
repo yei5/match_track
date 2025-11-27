@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/game_model.dart';
+import '../../../match/ui/services/match_pdf_service.dart';
 import '../../../../core/theme/app_colors_new.dart';
-import 'package:intl/intl.dart';
 
 class GameCard extends StatelessWidget {
   final GameModel game;
   final VoidCallback onTap;
+  final VoidCallback? onShareTap;
 
   const GameCard({
     super.key,
     required this.game,
     required this.onTap,
+    this.onShareTap,
   });
 
   String get _statusText {
@@ -77,6 +79,43 @@ class GameCard extends StatelessWidget {
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  // Download PDF button
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        await MatchPdfService.downloadGameReport(game: game);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('PDF generado exitosamente'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error al generar el PDF: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.download_rounded,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],

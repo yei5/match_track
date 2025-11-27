@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/game_model.dart';
 import '../../../match/ui/widgets/events_timeline.dart';
+import '../../../match/ui/services/match_pdf_service.dart';
 import '../../../../core/theme/app_colors_new.dart';
 
 class GameDetailScreen extends StatelessWidget {
@@ -17,6 +18,35 @@ class GameDetailScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          // Download PDF button
+          IconButton(
+            onPressed: () async {
+              try {
+                await MatchPdfService.downloadGameReport(game: game);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('PDF generado exitosamente'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al generar el PDF: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            icon: const Icon(Icons.download_rounded),
+            tooltip: 'Descargar PDF',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
