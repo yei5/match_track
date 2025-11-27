@@ -262,8 +262,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         ),
                       ),
                     ],
-                      ),
-                    ],
                   ),
                 ),
               ),

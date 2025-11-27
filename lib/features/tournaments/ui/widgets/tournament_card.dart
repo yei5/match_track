@@ -84,7 +84,7 @@ class _TournamentCardState extends State<TournamentCard> {
     }
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
@@ -178,7 +178,7 @@ class _TournamentCardState extends State<TournamentCard> {
                         ),
                       ],
                     ),
-                    if (_teams.isNotEmpty) ..[
+                    if (_teams.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 4,
