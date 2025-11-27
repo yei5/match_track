@@ -585,7 +585,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                   ),
                 ],
               ),
-              ),
               
               const SizedBox(height: 32),
               
