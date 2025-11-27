@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:match_track/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:match_track/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:match_track/features/auth/ui/bloc/signup_bloc.dart';
@@ -31,9 +32,13 @@ import 'package:match_track/features/match/ui/screens/create_match_screen.dart';
 import 'package:match_track/features/match/ui/screens/schedule_match_screen.dart';
 import 'package:match_track/features/match/ui/screens/select_match_to_control_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar localización para DateFormat
+  await initializeDateFormatting('es', null);
 
   await dotenv.load(fileName: ".env");
   final supabaseUrl = dotenv.env['SUPABASE_URL']!;
@@ -100,6 +105,16 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'MatchTrack',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('es', ''),
+          Locale('en', ''),
+        ],
+        locale: const Locale('es', ''),
         theme: ThemeData.from(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
