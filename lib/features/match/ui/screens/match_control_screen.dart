@@ -419,9 +419,9 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
               ),
               const SizedBox(height: 16),
               
-              // Botones de Gol centrados
+              // Primera fila: Gol, Tarjeta Roja, Tarjeta Amarilla
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // Gol
                   SizedBox(
@@ -454,7 +454,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                       label: '+1',
                     ),
                   ),
-                  const SizedBox(width: 16),
                   // Tarjeta Roja
                   SizedBox(
                     width: 100,
@@ -486,98 +485,106 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                       label: '+1',
                     ),
                   ),
+                  // Tarjeta Amarilla
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: _actionButton(
+                      icon: Icons.rectangle,
+                      color: const Color(0xFFF59E0B), // Naranja/Amarillo
+                      onTap: () async {
+                        final event = await showDialog<MatchEventDetail>(
+                          context: context,
+                          builder: (context) => CardDialog(
+                            homeTeam: controller.match.homeTeam,
+                            awayTeam: controller.match.awayTeam,
+                            homePlayers: _homePlayers,
+                            awayPlayers: _awayPlayers,
+                            currentMinute: controller.currentMinute,
+                            isRed: false,
+                          ),
+                        );
+                        if (event != null) {
+                          controller.addDetailedEvent(event);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('🟨 Tarjeta amarilla - Minuto ${event.minute}')),
+                            );
+                          }
+                        }
+                      },
+                      label: '+1',
+                    ),
+                  ),
                 ],
               ),
               
               const SizedBox(height: 16),
               
-              // Grid de otras acciones
-              GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1,
+              // Segunda fila: Sustitución e Interrupción
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Tarjeta Amarilla
-                  _actionButton(
-                    icon: Icons.rectangle,
-                    color: const Color(0xFFF59E0B), // Naranja/Amarillo
-                    onTap: () async {
-                      final event = await showDialog<MatchEventDetail>(
-                        context: context,
-                        builder: (context) => CardDialog(
-                          homeTeam: controller.match.homeTeam,
-                          awayTeam: controller.match.awayTeam,
-                          homePlayers: _homePlayers,
-                          awayPlayers: _awayPlayers,
-                          currentMinute: controller.currentMinute,
-                          isRed: false,
-                        ),
-                      );
-                      if (event != null) {
-                        controller.addDetailedEvent(event);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('🟨 Tarjeta amarilla - Minuto ${event.minute}')),
-                          );
-                        }
-                      }
-                    },
-                    label: '+1',
-                  ),
                   // Sustitución
-                  _actionButton(
-                    icon: Icons.swap_horiz_rounded,
-                    color: const Color(0xFF292D32), // Gris oscuro
-                    onTap: () async {
-                      final event = await showDialog<MatchEventDetail>(
-                        context: context,
-                        builder: (context) => SubstitutionDialog(
-                          homeTeam: controller.match.homeTeam,
-                          awayTeam: controller.match.awayTeam,
-                          homePlayers: _homePlayers,
-                          awayPlayers: _awayPlayers,
-                          currentMinute: controller.currentMinute,
-                        ),
-                      );
-                      if (event != null) {
-                        controller.addDetailedEvent(event);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('🔄 Sustitución - Minuto ${event.minute}')),
-                          );
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: _actionButton(
+                      icon: Icons.swap_horiz_rounded,
+                      color: const Color(0xFF292D32), // Gris oscuro
+                      onTap: () async {
+                        final event = await showDialog<MatchEventDetail>(
+                          context: context,
+                          builder: (context) => SubstitutionDialog(
+                            homeTeam: controller.match.homeTeam,
+                            awayTeam: controller.match.awayTeam,
+                            homePlayers: _homePlayers,
+                            awayPlayers: _awayPlayers,
+                            currentMinute: controller.currentMinute,
+                          ),
+                        );
+                        if (event != null) {
+                          controller.addDetailedEvent(event);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('🔄 Sustitución - Minuto ${event.minute}')),
+                            );
+                          }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
                   // Interrupción
-                  _actionButton(
-                    icon: Icons.warning_amber_rounded,
-                    color: const Color(0xFF9CA3AF), // Gris
-                    onTap: () async {
-                      final event = await showDialog<MatchEventDetail>(
-                        context: context,
-                        builder: (context) => InterruptionDialog(
-                          homeTeam: controller.match.homeTeam,
-                          awayTeam: controller.match.awayTeam,
-                          homePlayers: _homePlayers,
-                          awayPlayers: _awayPlayers,
-                          currentMinute: controller.currentMinute,
-                        ),
-                      );
-                      if (event != null) {
-                        controller.addDetailedEvent(event);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('🤚 ${event.displayText} - Minuto ${event.minute}')),
-                          );
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: _actionButton(
+                      icon: Icons.warning_amber_rounded,
+                      color: const Color(0xFF9CA3AF), // Gris
+                      onTap: () async {
+                        final event = await showDialog<MatchEventDetail>(
+                          context: context,
+                          builder: (context) => InterruptionDialog(
+                            homeTeam: controller.match.homeTeam,
+                            awayTeam: controller.match.awayTeam,
+                            homePlayers: _homePlayers,
+                            awayPlayers: _awayPlayers,
+                            currentMinute: controller.currentMinute,
+                          ),
+                        );
+                        if (event != null) {
+                          controller.addDetailedEvent(event);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('🤚 ${event.displayText} - Minuto ${event.minute}')),
+                            );
+                          }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
                 ],
+              ),
               ),
               
               const SizedBox(height: 32),
