@@ -4,6 +4,7 @@ import '../../domain/models/match_model.dart';
 import '../../data/repository/match_repository.dart';
 import 'match_control_screen.dart';
 import '../../../../core/theme/app_colors_new.dart';
+import '../../../../core/widgets/standard_nav_bar.dart';
 
 class SelectMatchToControlScreen extends StatefulWidget {
   const SelectMatchToControlScreen({super.key});
@@ -335,6 +336,25 @@ class _SelectMatchToControlScreenState extends State<SelectMatchToControlScreen>
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: StandardNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/games');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/tournaments');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/teams');
+              break;
+            case 3:
+              Navigator.pushReplacementNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }

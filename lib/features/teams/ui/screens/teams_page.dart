@@ -107,25 +107,19 @@ class _TeamsPageState extends State<TeamsPage> {
             }
           },
         ),
-      bottomNavigationBar: MinimizableNavBar(
-        currentIndex: _currentIndex,
+      bottomNavigationBar: StandardNavBar(
+        currentIndex: 2,
         onTap: (index) {
-          if (index == _currentIndex) return;
-
           switch (index) {
             case 0:
-              Navigator.pushReplacementNamed(context, '/control');
+              Navigator.pushReplacementNamed(context, '/games');
               break;
             case 1:
               Navigator.pushReplacementNamed(context, '/tournaments');
               break;
             case 2:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
+              break; // Ya estamos aquí
             case 3:
-              Navigator.pushReplacementNamed(context, '/teams');
-              break;
-            case 4:
               Navigator.pushReplacementNamed(context, '/profile');
               break;
           }

@@ -5,7 +5,7 @@ import '../../../match/domain/models/match_model.dart';
 import '../widgets/game_card.dart';
 import 'game_detail_screen.dart';
 import '../../../../core/theme/app_colors_new.dart';
-import '../../../../core/widgets/minimizable_nav_bar.dart';
+import '../../../../core/widgets/standard_nav_bar.dart';
 
 class GamesListScreen extends StatefulWidget {
   const GamesListScreen({super.key});
@@ -94,9 +94,23 @@ class _GamesListScreenState extends State<GamesListScreen> {
                     },
                   ),
                 ),
-      bottomNavigationBar: MinimizableNavBar(
+      bottomNavigationBar: StandardNavBar(
         currentIndex: 0,
-        onTap: (index) {},
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              break; // Ya estamos aquí
+            case 1:
+              Navigator.pushReplacementNamed(context, '/tournaments');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/teams');
+              break;
+            case 3:
+              Navigator.pushReplacementNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }

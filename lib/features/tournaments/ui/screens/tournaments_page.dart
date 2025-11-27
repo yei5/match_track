@@ -151,9 +151,23 @@ class _TournamentsPageState extends State<TournamentsPage> {
           ),
         ),
       ),
-      bottomNavigationBar: MinimizableNavBar(
+      bottomNavigationBar: StandardNavBar(
         currentIndex: 1,
-        onTap: (index) {},
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/games');
+              break;
+            case 1:
+              break; // Ya estamos aquí
+            case 2:
+              Navigator.pushReplacementNamed(context, '/teams');
+              break;
+            case 3:
+              Navigator.pushReplacementNamed(context, '/profile');
+              break;
+          }
+        },
       ),
     );
   }

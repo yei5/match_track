@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
+import '../../../../core/domain/model/player.dart';
 
 class CardDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
+  final List<Player> homePlayers;
+  final List<Player> awayPlayers;
   final int currentMinute;
   final bool isRed; // true = roja, false = amarilla
 
@@ -12,6 +15,8 @@ class CardDialog extends StatefulWidget {
     super.key,
     required this.homeTeam,
     required this.awayTeam,
+    required this.homePlayers,
+    required this.awayPlayers,
     required this.currentMinute,
     required this.isRed,
   });
@@ -22,14 +27,27 @@ class CardDialog extends StatefulWidget {
 
 class _CardDialogState extends State<CardDialog> {
   String? selectedTeamId;
-  final TextEditingController _playerNameController = TextEditingController();
   final TextEditingController _playerNumberController = TextEditingController();
+  Player? _foundPlayer;
 
   @override
   void dispose() {
-    _playerNameController.dispose();
     _playerNumberController.dispose();
     super.dispose();
+  }
+
+  void _searchPlayer(String dorsal) {
+    if (dorsal.isEmpty || selectedTeamId == null) {
+      setState(() => _foundPlayer = null);
+      return;
+    }
+
+    final players = selectedTeamId == widget.homeTeam.id 
+        ? widget.homePlayers 
+        : widget.awayPlayers;
+    
+    final player = players.where((p) => p.jersey_number == dorsal).firstOrNull;
+    setState(() => _foundPlayer = player);
   }
 
   @override
@@ -79,25 +97,34 @@ class _CardDialogState extends State<CardDialog> {
             ),
             if (selectedTeamId != null) ...[
               const SizedBox(height: 16),
-              const Text('Jugador sancionado:',
+              const Text('Jugador sancionado (Dorsal):',
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextField(
-                controller: _playerNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre del jugador',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
                 controller: _playerNumberController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Número de dorsal',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: _foundPlayer != null 
+                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      : null,
                 ),
                 keyboardType: TextInputType.number,
+                onChanged: _searchPlayer,
               ),
+              if (_foundPlayer != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  '✓ ${_foundPlayer!.name}',
+                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ] else if (_playerNumberController.text.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                const Text(
+                  '✗ Jugador no encontrado',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ],
             ],
           ],
         ),
@@ -108,9 +135,7 @@ class _CardDialogState extends State<CardDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: selectedTeamId == null ||
-                  _playerNameController.text.isEmpty ||
-                  _playerNumberController.text.isEmpty
+          onPressed: selectedTeamId == null || _foundPlayer == null
               ? null
               : () {
                   final event = MatchEventDetail(
@@ -118,9 +143,9 @@ class _CardDialogState extends State<CardDialog> {
                     type: widget.isRed ? EventType.redCard : EventType.yellowCard,
                     minute: widget.currentMinute,
                     teamId: selectedTeamId!,
-                    player: Player(
-                      name: _playerNameController.text,
-                      number: _playerNumberController.text,
+                    player: MatchEventModel.Player(
+                      name: _foundPlayer!.name,
+                      number: _foundPlayer!.jersey_number,
                       teamId: selectedTeamId!,
                     ),
                   );

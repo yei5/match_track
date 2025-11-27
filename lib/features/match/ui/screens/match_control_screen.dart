@@ -8,6 +8,9 @@ import '../widgets/substitution_dialog.dart';
 import '../widgets/interruption_dialog.dart';
 import '../widgets/match_statistics_widget.dart';
 import '../../../../core/theme/app_colors_new.dart';
+import '../../../../core/domain/model/player.dart';
+import '../../../players/data/repository/player_repository_impl.dart';
+import '../../../players/data/source/player_remote_data_source.dart';
 
 class MatchControlScreen extends StatefulWidget {
   final MatchModel match;
@@ -20,11 +23,37 @@ class MatchControlScreen extends StatefulWidget {
 
 class _MatchControlScreenState extends State<MatchControlScreen> {
   late MatchController controller;
+  final _playerRepository = PlayerRepositoryImpl(remoteDataSource: PlayerRemoteDataSourceImpl());
+  
+  List<Player> _homePlayers = [];
+  List<Player> _awayPlayers = [];
+  bool _loadingPlayers = true;
 
   @override
   void initState() {
     super.initState();
     controller = MatchController(match: widget.match);
+    _loadPlayers();
+  }
+
+  Future<void> _loadPlayers() async {
+    try {
+      final homePlayers = await _playerRepository.getPlayersForTeam(widget.match.homeTeam.id);
+      final awayPlayers = await _playerRepository.getPlayersForTeam(widget.match.awayTeam.id);
+      
+      setState(() {
+        _homePlayers = homePlayers;
+        _awayPlayers = awayPlayers;
+        _loadingPlayers = false;
+      });
+    } catch (e) {
+      setState(() => _loadingPlayers = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error cargando jugadores: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -303,6 +332,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         builder: (context) => GoalDialog(
                           homeTeam: controller.match.homeTeam,
                           awayTeam: controller.match.awayTeam,
+                          homePlayers: _homePlayers,
+                          awayPlayers: _awayPlayers,
                           currentMinute: controller.currentMinute,
                         ),
                       );
@@ -327,6 +358,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         builder: (context) => CardDialog(
                           homeTeam: controller.match.homeTeam,
                           awayTeam: controller.match.awayTeam,
+                          homePlayers: _homePlayers,
+                          awayPlayers: _awayPlayers,
                           currentMinute: controller.currentMinute,
                           isRed: true,
                         ),
@@ -352,6 +385,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         builder: (context) => CardDialog(
                           homeTeam: controller.match.homeTeam,
                           awayTeam: controller.match.awayTeam,
+                          homePlayers: _homePlayers,
+                          awayPlayers: _awayPlayers,
                           currentMinute: controller.currentMinute,
                           isRed: false,
                         ),
@@ -377,6 +412,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         builder: (context) => SubstitutionDialog(
                           homeTeam: controller.match.homeTeam,
                           awayTeam: controller.match.awayTeam,
+                          homePlayers: _homePlayers,
+                          awayPlayers: _awayPlayers,
                           currentMinute: controller.currentMinute,
                         ),
                       );

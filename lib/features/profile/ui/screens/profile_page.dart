@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/app_header.dart';
-import '../../../../core/widgets/minimizable_nav_bar.dart';
+import '../../../../core/widgets/standard_nav_bar.dart';
 import '../widgets/profile_content.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,12 +18,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: const CustomHeader(title: 'Perfil', showBackButton: false),
       body: const SafeArea(child: ProfileContent()),
-      bottomNavigationBar: MinimizableNavBar(
-        currentIndex: _currentIndex,
+      bottomNavigationBar: StandardNavBar(
+        currentIndex: 3,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          switch (index) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/games');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/tournaments');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/teams');
+              break;
+            case 3:
+              break; // Ya estamos aquí
+          }
         },
       ),
     );

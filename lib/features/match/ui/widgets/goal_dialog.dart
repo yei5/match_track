@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
+import '../../../../core/domain/model/player.dart';
 
 class GoalDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
+  final List<Player> homePlayers;
+  final List<Player> awayPlayers;
   final int currentMinute;
 
   const GoalDialog({
     super.key,
     required this.homeTeam,
     required this.awayTeam,
+    required this.homePlayers,
+    required this.awayPlayers,
     required this.currentMinute,
   });
 
@@ -20,19 +25,45 @@ class GoalDialog extends StatefulWidget {
 
 class _GoalDialogState extends State<GoalDialog> {
   String? selectedTeamId;
-  final TextEditingController _playerNameController = TextEditingController();
   final TextEditingController _playerNumberController = TextEditingController();
-  final TextEditingController _assistNameController = TextEditingController();
   final TextEditingController _assistNumberController = TextEditingController();
   bool includeAssist = false;
+  Player? _foundPlayer;
+  Player? _foundAssist;
 
   @override
   void dispose() {
-    _playerNameController.dispose();
     _playerNumberController.dispose();
-    _assistNameController.dispose();
     _assistNumberController.dispose();
     super.dispose();
+  }
+
+  void _searchPlayer(String dorsal) {
+    if (dorsal.isEmpty || selectedTeamId == null) {
+      setState(() => _foundPlayer = null);
+      return;
+    }
+
+    final players = selectedTeamId == widget.homeTeam.id 
+        ? widget.homePlayers 
+        : widget.awayPlayers;
+    
+    final player = players.where((p) => p.jersey_number == dorsal).firstOrNull;
+    setState(() => _foundPlayer = player);
+  }
+
+  void _searchAssist(String dorsal) {
+    if (dorsal.isEmpty || selectedTeamId == null) {
+      setState(() => _foundAssist = null);
+      return;
+    }
+
+    final players = selectedTeamId == widget.homeTeam.id 
+        ? widget.homePlayers 
+        : widget.awayPlayers;
+    
+    final player = players.where((p) => p.jersey_number == dorsal).firstOrNull;
+    setState(() => _foundAssist = player);
   }
 
   @override
@@ -82,25 +113,34 @@ class _GoalDialogState extends State<GoalDialog> {
             ),
             if (selectedTeamId != null) ...[
               const SizedBox(height: 16),
-              const Text('Goleador:',
+              const Text('Goleador (Dorsal):',
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               TextField(
-                controller: _playerNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre del jugador',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
                 controller: _playerNumberController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Número de dorsal',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: _foundPlayer != null 
+                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      : null,
                 ),
                 keyboardType: TextInputType.number,
+                onChanged: _searchPlayer,
               ),
+              if (_foundPlayer != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  '✓ ${_foundPlayer!.name}',
+                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ] else if (_playerNumberController.text.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                const Text(
+                  '✗ Jugador no encontrado',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ],
               const SizedBox(height: 16),
               CheckboxListTile(
                 title: const Text('Agregar asistencia'),
@@ -112,21 +152,30 @@ class _GoalDialogState extends State<GoalDialog> {
               if (includeAssist) ...[
                 const SizedBox(height: 8),
                 TextField(
-                  controller: _assistNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre del asistente',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
                   controller: _assistNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Número de dorsal',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'Dorsal del asistente',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: _foundAssist != null 
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : null,
                   ),
                   keyboardType: TextInputType.number,
+                  onChanged: _searchAssist,
                 ),
+                if (_foundAssist != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '✓ ${_foundAssist!.name}',
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                ] else if (_assistNumberController.text.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  const Text(
+                    '✗ Jugador no encontrado',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
               ],
             ],
           ],
@@ -138,9 +187,7 @@ class _GoalDialogState extends State<GoalDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: selectedTeamId == null ||
-                  _playerNameController.text.isEmpty ||
-                  _playerNumberController.text.isEmpty
+          onPressed: selectedTeamId == null || _foundPlayer == null
               ? null
               : () {
                   final event = MatchEventDetail(
@@ -148,16 +195,15 @@ class _GoalDialogState extends State<GoalDialog> {
                     type: EventType.goal,
                     minute: widget.currentMinute,
                     teamId: selectedTeamId!,
-                    scorer: Player(
-                      name: _playerNameController.text,
-                      number: _playerNumberController.text,
+                    scorer: MatchEventModel.Player(
+                      name: _foundPlayer!.name,
+                      number: _foundPlayer!.jersey_number,
                       teamId: selectedTeamId!,
                     ),
-                    assist: includeAssist &&
-                            _assistNameController.text.isNotEmpty
-                        ? Player(
-                            name: _assistNameController.text,
-                            number: _assistNumberController.text,
+                    assist: includeAssist && _foundAssist != null
+                        ? MatchEventModel.Player(
+                            name: _foundAssist!.name,
+                            number: _foundAssist!.jersey_number,
                             teamId: selectedTeamId!,
                           )
                         : null,
