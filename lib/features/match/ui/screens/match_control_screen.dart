@@ -195,74 +195,75 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                       ),
                       const SizedBox(height: 16),
                       Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      // Equipo Local
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.match.homeTeam.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textDark,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          // Equipo Local
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  widget.match.homeTeam.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textDark,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              widget.match.homeScore.toString(),
-                              style: const TextStyle(
-                                fontSize: 48,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.homeTeam,
+                              const SizedBox(height: 12),
+                              Text(
+                                widget.match.homeScore.toString(),
+                                style: const TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.homeTeam,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      // Separador
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          '-',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textLight,
+                            ],
                           ),
                         ),
-                      ),
-                      
-                      // Equipo Visitante
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.match.awayTeam.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textDark,
-                              ),
-                              textAlign: TextAlign.center,
+                        
+                        // Separador
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            '-',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textLight,
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              widget.match.awayScore.toString(),
-                              style: const TextStyle(
-                                fontSize: 48,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.awayTeam,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                        
+                        // Equipo Visitante
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                widget.match.awayTeam.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textDark,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                widget.match.awayScore.toString(),
+                                style: const TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.awayTeam,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               
