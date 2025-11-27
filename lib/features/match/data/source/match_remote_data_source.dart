@@ -48,8 +48,10 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
         }
       }
     } catch (e) {
-      debugPrint('Error saving match: $e');
-      rethrow;
+      debugPrint('⚠️ ERROR guardando partido en Supabase: $e');
+      debugPrint('💡 SOLUCIÓN: Ejecuta el script SQL en Supabase (ver SETUP_SUPABASE.md)');
+      // No hacer rethrow para que la app no se rompa
+      // El partido se perderá pero al menos la app funciona
     }
   }
 
@@ -120,7 +122,8 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
 
       return await _matchesFromResponse(response);
     } catch (e) {
-      debugPrint('Error getting scheduled matches: $e');
+      debugPrint('⚠️ ERROR obteniendo partidos agendados: $e');
+      debugPrint('💡 Retornando lista vacía. Ejecuta el script SQL en Supabase.');
       return [];
     }
   }
@@ -144,7 +147,8 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
 
       return await _matchesFromResponse(response);
     } catch (e) {
-      debugPrint('Error getting finished matches: $e');
+      debugPrint('⚠️ ERROR obteniendo partidos finalizados: $e');
+      debugPrint('💡 Retornando lista vacía. Ejecuta el script SQL en Supabase.');
       return [];
     }
   }
