@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import '../../domain/models/game_model.dart';
 import '../../../match/data/repository/match_repository.dart';
 import '../../../match/domain/models/match_model.dart';
+import '../../../tournaments/data/repository/tournament_repository_impl.dart';
+import '../../../tournaments/data/source/tournament_remote_data_source.dart';
+import '../../../tournaments/domain/entities/tournament_entity.dart';
 import '../widgets/game_card.dart';
 import 'game_detail_screen.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../../../core/widgets/standard_nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GamesListScreen extends StatefulWidget {
   const GamesListScreen({super.key});
@@ -16,7 +20,13 @@ class GamesListScreen extends StatefulWidget {
 
 class _GamesListScreenState extends State<GamesListScreen> {
   final _matchRepository = MatchRepository();
+  final _tournamentRepository = TournamentRepositoryImpl(
+    remoteDataSource: TournamentRemoteDataSourceImpl(
+      supabaseClient: Supabase.instance.client,
+    ),
+  );
   List<GameModel> _games = [];
+  Map<String, String> _tournamentNames = {};
   bool _isLoading = true;
 
   @override
@@ -28,6 +38,10 @@ class _GamesListScreenState extends State<GamesListScreen> {
   Future<void> _loadGames() async {
     setState(() => _isLoading = true);
     try {
+      // Primero cargar los torneos
+      await _loadTournaments();
+      
+      // Luego cargar los partidos
       final matches = await _matchRepository.getFinishedMatches();
       // Convertir MatchModel a GameModel
       setState(() {
@@ -39,11 +53,32 @@ class _GamesListScreenState extends State<GamesListScreen> {
     }
   }
 
+  Future<void> _loadTournaments() async {
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return;
+      
+      final tournaments = await _tournamentRepository.getTournaments(userId);
+      setState(() {
+        _tournamentNames = {
+          for (var t in tournaments) t.id: t.name
+        };
+      });
+    } catch (e) {
+      // Ignorar errores al cargar torneos
+    }
+  }
+
   GameModel _matchToGame(MatchModel match) {
+    String tournamentName = 'Amistoso';
+    if (match.tournamentId != null) {
+      tournamentName = _tournamentNames[match.tournamentId] ?? 'Torneo';
+    }
+    
     return GameModel(
       id: match.id,
       tournamentId: match.tournamentId ?? 'friendly',
-      tournamentName: match.tournamentId != null ? 'Torneo' : 'Amistoso',
+      tournamentName: tournamentName,
       homeTeam: match.homeTeam,
       awayTeam: match.awayTeam,
       homeScore: match.homeScore,

@@ -437,6 +437,80 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              
+              // Botones de Gol centrados
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Gol
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: _actionButton(
+                      icon: Icons.sports_soccer,
+                      color: const Color(0xFF00FF00), // Verde brillante
+                      iconColor: Colors.black,
+                      onTap: () async {
+                        final event = await showDialog<MatchEventDetail>(
+                          context: context,
+                          builder: (context) => GoalDialog(
+                            homeTeam: controller.match.homeTeam,
+                            awayTeam: controller.match.awayTeam,
+                            homePlayers: _homePlayers,
+                            awayPlayers: _awayPlayers,
+                            currentMinute: controller.currentMinute,
+                          ),
+                        );
+                        if (event != null) {
+                          controller.addDetailedEvent(event);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('⚽ Gol registrado - Minuto ${event.minute}')),
+                            );
+                          }
+                        }
+                      },
+                      label: '+1',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Tarjeta Roja
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: _actionButton(
+                      icon: Icons.rectangle,
+                      color: const Color(0xFFE63946), // Rojo
+                      onTap: () async {
+                        final event = await showDialog<MatchEventDetail>(
+                          context: context,
+                          builder: (context) => CardDialog(
+                            homeTeam: controller.match.homeTeam,
+                            awayTeam: controller.match.awayTeam,
+                            homePlayers: _homePlayers,
+                            awayPlayers: _awayPlayers,
+                            currentMinute: controller.currentMinute,
+                            isRed: true,
+                          ),
+                        );
+                        if (event != null) {
+                          controller.addDetailedEvent(event);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('🟥 Tarjeta roja - Minuto ${event.minute}')),
+                            );
+                          }
+                        }
+                      },
+                      label: '+1',
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Grid de otras acciones
               GridView.count(
                 crossAxisCount: 3,
                 shrinkWrap: true,
@@ -445,60 +519,6 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: 1,
                 children: [
-                  // Gol
-                  _actionButton(
-                    icon: Icons.sports_soccer,
-                    color: const Color(0xFF00FF00), // Verde brillante
-                    iconColor: Colors.black,
-                    onTap: () async {
-                      final event = await showDialog<MatchEventDetail>(
-                        context: context,
-                        builder: (context) => GoalDialog(
-                          homeTeam: controller.match.homeTeam,
-                          awayTeam: controller.match.awayTeam,
-                          homePlayers: _homePlayers,
-                          awayPlayers: _awayPlayers,
-                          currentMinute: controller.currentMinute,
-                        ),
-                      );
-                      if (event != null) {
-                        controller.addDetailedEvent(event);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('⚽ Gol registrado - Minuto ${event.minute}')),
-                          );
-                        }
-                      }
-                    },
-                    label: '+1',
-                  ),
-                  // Tarjeta Roja
-                  _actionButton(
-                    icon: Icons.rectangle,
-                    color: const Color(0xFFE63946), // Rojo
-                    onTap: () async {
-                      final event = await showDialog<MatchEventDetail>(
-                        context: context,
-                        builder: (context) => CardDialog(
-                          homeTeam: controller.match.homeTeam,
-                          awayTeam: controller.match.awayTeam,
-                          homePlayers: _homePlayers,
-                          awayPlayers: _awayPlayers,
-                          currentMinute: controller.currentMinute,
-                          isRed: true,
-                        ),
-                      );
-                      if (event != null) {
-                        controller.addDetailedEvent(event);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('🟥 Tarjeta roja - Minuto ${event.minute}')),
-                          );
-                        }
-                      }
-                    },
-                    label: '+1',
-                  ),
                   // Tarjeta Amarilla
                   _actionButton(
                     icon: Icons.rectangle,
