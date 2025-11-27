@@ -536,11 +536,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                                   )
                                   .toList(),
                             ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
                           ],
                         ),
                       ),
