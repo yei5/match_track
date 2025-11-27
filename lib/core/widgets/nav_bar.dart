@@ -16,7 +16,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/control');
+        Navigator.pushReplacementNamed(context, '/games');
         break;
       case 1:
         Navigator.pushReplacementNamed(context, '/tournaments');
@@ -64,9 +64,9 @@ class CustomBottomNavBar extends StatelessWidget {
           selectedIconTheme: const IconThemeData(size: 32),
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.note_alt_outlined),
-              activeIcon: Icon(Icons.note_alt),
-              label: 'Control',
+              icon: Icon(Icons.sports_soccer_outlined),
+              activeIcon: Icon(Icons.sports_soccer),
+              label: 'Partidos',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.emoji_events_outlined),

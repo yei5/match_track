@@ -26,6 +26,7 @@ import 'package:match_track/features/tournaments/ui/screens/create_tournament_pa
 import 'package:match_track/features/tournaments/ui/screens/edit_tournament_page.dart';
 import 'package:match_track/features/tournaments/ui/screens/tournament_detail_page.dart';
 import 'package:match_track/features/tournaments/ui/screens/tournaments_page.dart';
+import 'package:match_track/features/games/ui/screens/games_list_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -108,6 +109,7 @@ class MyApp extends StatelessWidget {
           '/createTournament': (_) => const CreateTournamentPage(),
           '/teams': (_) => const TeamsPage(),
           '/createTeam': (_) => const TeamFormPage(),
+          '/games': (_) => const GamesListScreen(),
           '/tournamentDetail': (context) {
             final args = ModalRoute.of(context)!.settings.arguments
                 as Map<String, dynamic>;

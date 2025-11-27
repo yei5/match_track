@@ -3,16 +3,24 @@ import 'package:flutter/material.dart';
 import '../../domain/models/match_model.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../data/repository/match_repository.dart';
+import '../../../games/domain/models/game_model.dart';
 
 class MatchController extends ChangeNotifier {
   final MatchModel match;
   final MatchRepository? repository;
   Timer? _ticker;
+  GameStatistics statistics = GameStatistics.empty();
 
   MatchController({
     required this.match,
     this.repository,
-  });
+  }) {
+    _initializeStatistics();
+  }
+
+  void _initializeStatistics() {
+    statistics = GameStatistics.empty();
+  }
 
   int get elapsedSeconds => match.elapsedSeconds;
   int get currentMinute => (match.elapsedSeconds / 60).floor();
@@ -99,8 +107,103 @@ class MatchController extends ChangeNotifier {
     if (event.type == EventType.goal) {
       if (event.teamId == match.homeTeam.id) {
         match.homeScore++;
+        statistics = GameStatistics(
+          homePossession: statistics.homePossession,
+          awayPossession: statistics.awayPossession,
+          homeExpectedGoals: statistics.homeExpectedGoals,
+          awayExpectedGoals: statistics.awayExpectedGoals,
+          homeTotalShots: statistics.homeTotalShots + 1,
+          awayTotalShots: statistics.awayTotalShots,
+          homeShotsOnTarget: statistics.homeShotsOnTarget + 1,
+          awayShotsOnTarget: statistics.awayShotsOnTarget,
+          homeBigChances: statistics.homeBigChances,
+          awayBigChances: statistics.awayBigChances,
+          homeCorners: statistics.homeCorners,
+          awayCorners: statistics.awayCorners,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeCompletedPasses: statistics.homeCompletedPasses,
+          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeRedCards: statistics.homeRedCards,
+          awayRedCards: statistics.awayRedCards,
+          homeAttacks: statistics.homeAttacks + 1,
+          awayAttacks: statistics.awayAttacks,
+        );
       } else if (event.teamId == match.awayTeam.id) {
         match.awayScore++;
+        statistics = GameStatistics(
+          homePossession: statistics.homePossession,
+          awayPossession: statistics.awayPossession,
+          homeExpectedGoals: statistics.homeExpectedGoals,
+          awayExpectedGoals: statistics.awayExpectedGoals,
+          homeTotalShots: statistics.homeTotalShots,
+          awayTotalShots: statistics.awayTotalShots + 1,
+          homeShotsOnTarget: statistics.homeShotsOnTarget,
+          awayShotsOnTarget: statistics.awayShotsOnTarget + 1,
+          homeBigChances: statistics.homeBigChances,
+          awayBigChances: statistics.awayBigChances,
+          homeCorners: statistics.homeCorners,
+          awayCorners: statistics.awayCorners,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeCompletedPasses: statistics.homeCompletedPasses,
+          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeRedCards: statistics.homeRedCards,
+          awayRedCards: statistics.awayRedCards,
+          homeAttacks: statistics.homeAttacks,
+          awayAttacks: statistics.awayAttacks + 1,
+        );
+      }
+    }
+
+    // Si es tarjeta roja, actualizar estadísticas
+    if (event.type == EventType.card && event.cardType == CardType.red) {
+      if (event.teamId == match.homeTeam.id) {
+        statistics = GameStatistics(
+          homePossession: statistics.homePossession,
+          awayPossession: statistics.awayPossession,
+          homeExpectedGoals: statistics.homeExpectedGoals,
+          awayExpectedGoals: statistics.awayExpectedGoals,
+          homeTotalShots: statistics.homeTotalShots,
+          awayTotalShots: statistics.awayTotalShots,
+          homeShotsOnTarget: statistics.homeShotsOnTarget,
+          awayShotsOnTarget: statistics.awayShotsOnTarget,
+          homeBigChances: statistics.homeBigChances,
+          awayBigChances: statistics.awayBigChances,
+          homeCorners: statistics.homeCorners,
+          awayCorners: statistics.awayCorners,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeCompletedPasses: statistics.homeCompletedPasses,
+          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeRedCards: statistics.homeRedCards + 1,
+          awayRedCards: statistics.awayRedCards,
+          homeAttacks: statistics.homeAttacks,
+          awayAttacks: statistics.awayAttacks,
+        );
+      } else {
+        statistics = GameStatistics(
+          homePossession: statistics.homePossession,
+          awayPossession: statistics.awayPossession,
+          homeExpectedGoals: statistics.homeExpectedGoals,
+          awayExpectedGoals: statistics.awayExpectedGoals,
+          homeTotalShots: statistics.homeTotalShots,
+          awayTotalShots: statistics.awayTotalShots,
+          homeShotsOnTarget: statistics.homeShotsOnTarget,
+          awayShotsOnTarget: statistics.awayShotsOnTarget,
+          homeBigChances: statistics.homeBigChances,
+          awayBigChances: statistics.awayBigChances,
+          homeCorners: statistics.homeCorners,
+          awayCorners: statistics.awayCorners,
+          homeOffsides: statistics.homeOffsides,
+          awayOffsides: statistics.awayOffsides,
+          homeCompletedPasses: statistics.homeCompletedPasses,
+          awayCompletedPasses: statistics.awayCompletedPasses,
+          homeRedCards: statistics.homeRedCards,
+          awayRedCards: statistics.awayRedCards + 1,
+          homeAttacks: statistics.homeAttacks,
+          awayAttacks: statistics.awayAttacks,
+        );
       }
     }
     

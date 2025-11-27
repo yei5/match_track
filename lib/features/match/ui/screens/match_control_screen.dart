@@ -6,7 +6,7 @@ import '../widgets/goal_dialog.dart';
 import '../widgets/card_dialog.dart';
 import '../widgets/substitution_dialog.dart';
 import '../widgets/interruption_dialog.dart';
-import '../widgets/events_timeline.dart';
+import '../widgets/match_statistics_widget.dart';
 import '../../../../core/theme/app_colors_new.dart';
 
 class MatchControlScreen extends StatefulWidget {
@@ -435,54 +435,12 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
               
               const SizedBox(height: 32),
               
-              // Timeline de eventos
+              // Estadísticas del partido
               AnimatedBuilder(
                 animation: controller,
                 builder: (_, __) {
-                  if (controller.match.detailedEvents.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'No hay eventos registrados aún',
-                          style: TextStyle(
-                            color: AppColors.textLight,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Eventos del Partido',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      EventsTimeline(
-                        events: controller.sortedEvents,
-                        homeTeam: controller.match.homeTeam,
-                        awayTeam: controller.match.awayTeam,
-                      ),
-                    ],
+                  return MatchStatisticsWidget(
+                    statistics: controller.statistics,
                   );
                 },
               ),
