@@ -7,6 +7,7 @@ import '../widgets/card_dialog.dart';
 import '../widgets/substitution_dialog.dart';
 import '../widgets/interruption_dialog.dart';
 import '../widgets/match_statistics_widget.dart';
+import '../services/match_pdf_service.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../../../core/domain/model/player.dart' as CorePlayer;
 import '../../../players/data/repository/player_repository_impl.dart';
@@ -37,6 +38,7 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
   List<CorePlayer.Player> _homePlayers = [];
   List<CorePlayer.Player> _awayPlayers = [];
   TournamentEntity? _tournament;
+  bool _isGeneratingPdf = false;
 
   @override
   void initState() {
@@ -72,6 +74,40 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
       setState(() => _tournament = tournament);
     } catch (e) {
       // No mostrar error si no se encuentra el torneo
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    setState(() => _isGeneratingPdf = true);
+    
+    try {
+      await MatchPdfService.downloadMatchReport(
+        match: controller.match,
+        statistics: controller.statistics,
+        tournamentName: _tournament?.name,
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PDF generado exitosamente'),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al generar el PDF: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingPdf = false);
+      }
     }
   }
 
@@ -597,40 +633,82 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
               
               const SizedBox(height: 32),
               
-              // Botón de guardar partido
-              Center(
-                child: SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await controller.stop();
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('✅ Partido guardado'),
-                            backgroundColor: Color(0xFF10B981),
-                          ),
-                        );
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+              // Botones de acción
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Botón de guardar partido
+                  SizedBox(
+                    width: 150,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        await controller.stop();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('✅ Partido guardado'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      icon: const Icon(Icons.save_rounded, size: 20),
+                      label: const Text(
+                        'Guardar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Guardar',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF10B981),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  
+                  const SizedBox(width: 12),
+                  
+                  // Botón de descargar PDF
+                  SizedBox(
+                    width: 150,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: _isGeneratingPdf ? null : _downloadPdf,
+                      icon: _isGeneratingPdf
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Icon(Icons.download_rounded, size: 20),
+                      label: Text(
+                        _isGeneratingPdf ? 'Generando...' : 'Descargar PDF',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+                        disabledForegroundColor: Colors.white70,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               
               // Espacio final para scroll completo
