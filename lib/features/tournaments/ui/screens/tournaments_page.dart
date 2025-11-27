@@ -44,7 +44,7 @@ class _TournamentsPageState extends State<TournamentsPage> {
         return;
       }
 
-      print('🔄 Cargando torneos para usuario: ${user.id}');
+      debugPrint('🔄 Cargando torneos para usuario: ${user.id}');
 
       // Verificar si el usuario tiene perfil
       final profile = await supabase
@@ -67,13 +67,13 @@ class _TournamentsPageState extends State<TournamentsPage> {
           .eq('user_id', user.id)
           .order('created_at', ascending: false);
 
-      print('✅ Torneos cargados: ${response.length} torneos encontrados');
+      debugPrint('✅ Torneos cargados: ${response.length} torneos encontrados');
 
       setState(() {
         tournaments = List<Map<String, dynamic>>.from(response);
       });
     } catch (e) {
-      print('❌ Error completo cargando torneos: $e');
+      debugPrint('❌ Error completo cargando torneos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al cargar los torneos: ${e.toString()}'),

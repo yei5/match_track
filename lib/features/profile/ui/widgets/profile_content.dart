@@ -227,7 +227,7 @@ class _ProfileContentState extends State<ProfileContent> {
                             padding: const EdgeInsets.only(top: 0),
                             child: TextButton(
                               onPressed: () {
-                                print('Ver todos los equipos');
+                                debugPrint('Ver todos los equipos');
                               },
                               child: const Text(
                                 'Ver todos los equipos',

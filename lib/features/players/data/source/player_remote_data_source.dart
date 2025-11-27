@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:match_track/core/domain/model/player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,7 +21,7 @@ class PlayerRemoteDataSourceImpl implements PlayerRemoteDataSource {
         .single();
     return Player.fromJson(response);
     } catch (e) {
-      print('Error creating player: $e');
+      debugPrint('Error creating player: $e');
       rethrow;
     }
     

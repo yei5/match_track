@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../domain/models/game_model.dart';
 import '../../../match/data/repository/match_repository.dart';
 import '../../../match/domain/models/match_model.dart';
@@ -94,6 +95,18 @@ class _GamesListScreenState extends State<GamesListScreen> {
     return _games;
   }
 
+  Map<String, List<GameModel>> get _gamesByDate {
+    final Map<String, List<GameModel>> grouped = {};
+    for (var game in _filteredGames) {
+      final dateKey = DateFormat('EEEE, d MMMM', 'es').format(game.scheduledDate);
+      if (!grouped.containsKey(dateKey)) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey]!.add(game);
+    }
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,19 +125,59 @@ class _GamesListScreenState extends State<GamesListScreen> {
                   onRefresh: _loadGames,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: _filteredGames.length,
+                    itemCount: _gamesByDate.length,
                     itemBuilder: (context, index) {
-                      final game = _filteredGames[index];
-                      return GameCard(
-                        game: game,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => GameDetailScreen(game: game),
+                      final dateKey = _gamesByDate.keys.elementAt(index);
+                      final gamesForDate = _gamesByDate[dateKey]!;
+                      final totalGames = gamesForDate.length;
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Encabezado de fecha
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          );
-                        },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  dateKey,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                Text(
+                                  '$totalGames ${totalGames == 1 ? "Partido" : "Partidos"}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Lista de partidos para esta fecha
+                          ...gamesForDate.map((game) => GameCard(
+                            game: game,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => GameDetailScreen(game: game),
+                                ),
+                              );
+                            },
+                          )).toList(),
+                          const SizedBox(height: 16),
+                        ],
                       );
                     },
                   ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:match_track/core/domain/model/player.dart';
 import 'package:match_track/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -101,7 +102,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       for (final player in event.players) {
         final playerWithTeamId =
             Player.copyWith(player: player, team_id: createdTeam.id);
-        print( "Creating player with team ID: ${playerWithTeamId.toJson()}");
+        debugPrint("Creating player with team ID: ${playerWithTeamId.toJson()}");
         await createPlayer.call(playerWithTeamId);
       }
 
