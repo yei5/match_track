@@ -166,17 +166,42 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
   @override
   Future<void> saveEvent(MatchEventDetail event, String matchId) async {
     try {
+      // Determinar jugador principal y secundario según el tipo de evento
+      Player? mainPlayer;
+      Player? secondPlayer;
+      
+      switch (event.type) {
+        case EventType.goal:
+          mainPlayer = event.scorer;
+          secondPlayer = event.assist;
+          break;
+        case EventType.yellowCard:
+        case EventType.redCard:
+        case EventType.foul:
+        case EventType.injury:
+          mainPlayer = event.player;
+          break;
+        case EventType.substitution:
+          mainPlayer = event.playerOut;
+          secondPlayer = event.playerIn;
+          break;
+        default:
+          break;
+      }
+      
       final eventData = {
         'id': event.id,
         'match_id': matchId,
         'type': event.type.toString().split('.').last,
         'minute': event.minute,
-        'team_id': event.team.id,
-        'player_id': event.player?.id,
-        'player2_id': event.player2?.id,
-        'details': event.details,
-        'jersey_number': event.jerseyNumber,
-        'jersey_number2': event.jerseyNumber2,
+        'team_id': event.teamId,
+        'player_id': mainPlayer?.teamId,
+        'player_name': mainPlayer?.name,
+        'player2_id': secondPlayer?.teamId,
+        'player2_name': secondPlayer?.name,
+        'details': event.description,
+        'jersey_number': mainPlayer?.number != null ? int.tryParse(mainPlayer!.number) : null,
+        'jersey_number2': secondPlayer?.number != null ? int.tryParse(secondPlayer!.number) : null,
       };
 
       await supabaseClient.from('match_events').upsert(eventData);
@@ -269,16 +294,35 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
   }
 
   MatchEventDetail _eventFromJson(Map<String, dynamic> json) {
+    final type = _eventTypeFromString(json['type']);
+    
+    // Crear Player si hay datos
+    Player? createPlayer(String? name, String? number, String? teamId) {
+      if (name == null || number == null || teamId == null) return null;
+      return Player(name: name, number: number, teamId: teamId);
+    }
+    
     return MatchEventDetail(
       id: json['id'],
-      type: _eventTypeFromString(json['type']),
+      type: type,
       minute: json['minute'],
-      team: _teamFromJson(json['team'] as Map<String, dynamic>?),
-      player: null, // Se puede mejorar cargando el jugador desde la BD
-      player2: null,
-      details: json['details'],
-      jerseyNumber: json['jersey_number'],
-      jerseyNumber2: json['jersey_number2'],
+      teamId: json['team_id'],
+      scorer: type == EventType.goal 
+          ? createPlayer(json['player_name'], json['jersey_number']?.toString(), json['team_id'])
+          : null,
+      assist: type == EventType.goal 
+          ? createPlayer(json['player2_name'], json['jersey_number2']?.toString(), json['team_id'])
+          : null,
+      player: (type == EventType.yellowCard || type == EventType.redCard || type == EventType.foul || type == EventType.injury)
+          ? createPlayer(json['player_name'], json['jersey_number']?.toString(), json['team_id'])
+          : null,
+      playerOut: type == EventType.substitution
+          ? createPlayer(json['player_name'], json['jersey_number']?.toString(), json['team_id'])
+          : null,
+      playerIn: type == EventType.substitution
+          ? createPlayer(json['player2_name'], json['jersey_number2']?.toString(), json['team_id'])
+          : null,
+      description: json['details'],
     );
   }
 
@@ -288,8 +332,10 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
         return MatchStatus.scheduled;
       case 'idle':
         return MatchStatus.idle;
-      case 'inProgress':
-        return MatchStatus.inProgress;
+      case 'running':
+        return MatchStatus.running;
+      case 'paused':
+        return MatchStatus.paused;
       case 'finished':
         return MatchStatus.finished;
       default:
