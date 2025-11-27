@@ -24,6 +24,12 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
   @override
   Future<void> saveMatch(MatchModel match) async {
     try {
+      debugPrint('💾 Intentando guardar partido en Supabase...');
+      debugPrint('   ID: ${match.id}');
+      debugPrint('   Local: ${match.homeTeam.name}');
+      debugPrint('   Visitante: ${match.awayTeam.name}');
+      debugPrint('   Estado: ${match.status}');
+      
       final matchData = {
         'id': match.id,
         'home_team_id': match.homeTeam.id,
@@ -38,8 +44,12 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
         'user_id': supabaseClient.auth.currentUser?.id,
       };
 
+      debugPrint('   Datos a guardar: $matchData');
+
       // Usar upsert para insertar o actualizar
       await supabaseClient.from('matches').upsert(matchData);
+      
+      debugPrint('✅ Partido guardado exitosamente en Supabase');
       
       // Guardar eventos si los hay
       if (match.detailedEvents.isNotEmpty) {
@@ -48,8 +58,21 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
         }
       }
     } catch (e) {
-      debugPrint('⚠️ ERROR guardando partido en Supabase: $e');
-      debugPrint('💡 SOLUCIÓN: Ejecuta el script SQL en Supabase (ver SETUP_SUPABASE.md)');
+      debugPrint('❌ ERROR guardando partido en Supabase: $e');
+      debugPrint('');
+      debugPrint('╔═══════════════════════════════════════════════════════════╗');
+      debugPrint('║  ⚠️  LAS TABLAS DE PARTIDOS NO EXISTEN EN SUPABASE  ⚠️   ║');
+      debugPrint('╚═══════════════════════════════════════════════════════════╝');
+      debugPrint('');
+      debugPrint('📋 SOLUCIÓN (5 minutos):');
+      debugPrint('   1. Abre: https://supabase.com/dashboard');
+      debugPrint('   2. Ve a: SQL Editor');
+      debugPrint('   3. Copia el contenido de: EJECUTAR_EN_SUPABASE.sql');
+      debugPrint('   4. Pégalo y haz clic en "Run"');
+      debugPrint('   5. ¡Listo! Los partidos se guardarán automáticamente');
+      debugPrint('');
+      debugPrint('📄 Instrucciones detalladas en: INSTRUCCIONES_SUPABASE.md');
+      debugPrint('');
       // No hacer rethrow para que la app no se rompa
       // El partido se perderá pero al menos la app funciona
     }
@@ -106,8 +129,15 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
   @override
   Future<List<MatchModel>> getScheduledMatches() async {
     try {
+      debugPrint('🔍 Buscando partidos agendados en Supabase...');
+      
       final userId = supabaseClient.auth.currentUser?.id;
-      if (userId == null) return [];
+      if (userId == null) {
+        debugPrint('❌ No hay usuario autenticado');
+        return [];
+      }
+
+      debugPrint('   Usuario ID: $userId');
 
       final response = await supabaseClient
           .from('matches')
@@ -120,10 +150,19 @@ class MatchRemoteDataSourceImpl implements MatchRemoteDataSource {
           .eq('status', 'scheduled')
           .order('scheduled_date', ascending: true);
 
+      debugPrint('✅ Encontrados ${(response as List).length} partidos agendados');
+      
       return await _matchesFromResponse(response);
     } catch (e) {
-      debugPrint('⚠️ ERROR obteniendo partidos agendados: $e');
-      debugPrint('💡 Retornando lista vacía. Ejecuta el script SQL en Supabase.');
+      debugPrint('❌ ERROR obteniendo partidos agendados: $e');
+      debugPrint('');
+      debugPrint('╔═══════════════════════════════════════════════════════════╗');
+      debugPrint('║  ⚠️  LAS TABLAS DE PARTIDOS NO EXISTEN EN SUPABASE  ⚠️   ║');
+      debugPrint('╚═══════════════════════════════════════════════════════════╝');
+      debugPrint('');
+      debugPrint('Los partidos NO se están guardando porque falta ejecutar el SQL.');
+      debugPrint('Ver archivo: INSTRUCCIONES_SUPABASE.md');
+      debugPrint('');
       return [];
     }
   }
