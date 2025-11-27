@@ -437,6 +437,8 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                         builder: (context) => InterruptionDialog(
                           homeTeam: controller.match.homeTeam,
                           awayTeam: controller.match.awayTeam,
+                          homePlayers: _homePlayers,
+                          awayPlayers: _awayPlayers,
                           currentMinute: controller.currentMinute,
                         ),
                       );
@@ -482,6 +484,44 @@ class _MatchControlScreenState extends State<MatchControlScreen> {
                     statistics: controller.statistics,
                   );
                 },
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Botón de guardar partido
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await controller.stop();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('✅ Partido guardado'),
+                            backgroundColor: Color(0xFF10B981),
+                          ),
+                        );
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Guardar',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
               
               // Espacio final para scroll completo

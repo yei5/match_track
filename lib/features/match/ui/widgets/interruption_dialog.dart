@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/match_event_model.dart';
 import '../../../../core/domain/model/team.dart';
+import '../../../../core/domain/model/player.dart' as CorePlayer;
 
 class InterruptionDialog extends StatefulWidget {
   final Team homeTeam;
   final Team awayTeam;
+  final List<CorePlayer.Player> homePlayers;
+  final List<CorePlayer.Player> awayPlayers;
   final int currentMinute;
 
   const InterruptionDialog({
     super.key,
     required this.homeTeam,
     required this.awayTeam,
+    required this.homePlayers,
+    required this.awayPlayers,
     required this.currentMinute,
   });
 
@@ -21,16 +26,29 @@ class InterruptionDialog extends StatefulWidget {
 class _InterruptionDialogState extends State<InterruptionDialog> {
   EventType? selectedType;
   String? selectedTeamId;
-  final TextEditingController _playerNameController = TextEditingController();
   final TextEditingController _playerNumberController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  CorePlayer.Player? _foundPlayer;
 
   @override
   void dispose() {
-    _playerNameController.dispose();
     _playerNumberController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  void _searchPlayer(String dorsal) {
+    if (dorsal.isEmpty || selectedTeamId == null) {
+      setState(() => _foundPlayer = null);
+      return;
+    }
+
+    final players = selectedTeamId == widget.homeTeam.id 
+        ? widget.homePlayers 
+        : widget.awayPlayers;
+    
+    final player = players.where((p) => p.jersey_number == dorsal).firstOrNull;
+    setState(() => _foundPlayer = player);
   }
 
   @override
@@ -115,25 +133,34 @@ class _InterruptionDialogState extends State<InterruptionDialog> {
               ),
               if (selectedType == EventType.injury && selectedTeamId != null) ...[
                 const SizedBox(height: 16),
-                const Text('Jugador lesionado:',
+                const Text('Jugador lesionado (Dorsal):',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 TextField(
-                  controller: _playerNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre del jugador',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
                   controller: _playerNumberController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Número de dorsal',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: _foundPlayer != null 
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : null,
                   ),
                   keyboardType: TextInputType.number,
+                  onChanged: _searchPlayer,
                 ),
+                if (_foundPlayer != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '✓ ${_foundPlayer!.name}',
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                ] else if (_playerNumberController.text.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  const Text(
+                    '✗ Jugador no encontrado',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
               ],
               if (selectedType == EventType.foul && selectedTeamId != null) ...[
                 const SizedBox(height: 16),
@@ -157,7 +184,8 @@ class _InterruptionDialogState extends State<InterruptionDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: selectedType == null || selectedTeamId == null
+          onPressed: selectedType == null || selectedTeamId == null ||
+                  (selectedType == EventType.injury && _foundPlayer == null)
               ? null
               : () {
                   final event = MatchEventDetail(
@@ -165,11 +193,10 @@ class _InterruptionDialogState extends State<InterruptionDialog> {
                     type: selectedType!,
                     minute: widget.currentMinute,
                     teamId: selectedTeamId!,
-                    player: selectedType == EventType.injury &&
-                            _playerNameController.text.isNotEmpty
+                    player: selectedType == EventType.injury && _foundPlayer != null
                         ? Player(
-                            name: _playerNameController.text,
-                            number: _playerNumberController.text,
+                            name: _foundPlayer!.name,
+                            number: _foundPlayer!.jersey_number,
                             teamId: selectedTeamId!,
                           )
                         : null,

@@ -51,7 +51,7 @@ class GameDetailScreen extends StatelessWidget {
         statusText = "Min ${game.currentMinute}'";
         break;
       case GameStatus.finished:
-        borderColor = const Color(0xFFEF4444);
+        borderColor = const Color(0xFF6366F1);
         statusText = 'Finalizado';
         break;
       case GameStatus.scheduled:

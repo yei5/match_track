@@ -4,6 +4,9 @@ import '../../domain/models/match_model.dart';
 import '../../../../core/domain/model/team.dart';
 import '../../../teams/data/repository/team_repository_impl.dart';
 import '../../../teams/data/source/team_remote_data_source.dart';
+import '../../../tournaments/data/repository/tournament_repository_impl.dart';
+import '../../../tournaments/data/source/tournament_remote_data_source.dart';
+import '../../../tournaments/domain/entities/tournament_entity.dart';
 import '../../data/repository/match_repository.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../../../core/widgets/standard_nav_bar.dart';
@@ -18,14 +21,16 @@ class ScheduleMatchScreen extends StatefulWidget {
 
 class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
   final _teamRepository = TeamRepositoryImpl(remoteDataSource: TeamRemoteDataSourceImpl());
+  final _tournamentRepository = TournamentRepositoryImpl(remoteDataSource: TournamentRemoteDataSourceImpl());
   final _matchRepository = MatchRepository();
   
   List<Team> _teams = [];
+  List<TournamentEntity> _tournaments = [];
   bool _isLoading = true;
   
   Team? _selectedHomeTeam;
   Team? _selectedAwayTeam;
-  String? _selectedTournamentId;
+  TournamentEntity? _selectedTournament;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isFriendly = true;
@@ -45,9 +50,11 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
       }
       
       final teams = await _teamRepository.getTeams(userId);
+      final tournaments = await _tournamentRepository.getTournaments(userId);
       
       setState(() {
         _teams = teams;
+        _tournaments = tournaments;
         _isLoading = false;
       });
     } catch (e) {
@@ -126,6 +133,13 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
       return;
     }
 
+    if (!_isFriendly && _selectedTournament == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes seleccionar un torneo')),
+      );
+      return;
+    }
+
     try {
       // Combinar fecha y hora
       final scheduledDateTime = DateTime(
@@ -143,7 +157,7 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
         awayTeam: _selectedAwayTeam!,
         status: MatchStatus.scheduled,
         scheduledDate: scheduledDateTime,
-        tournamentId: _isFriendly ? null : _selectedTournamentId,
+        tournamentId: _isFriendly ? null : _selectedTournament?.id,
       );
 
       // Guardar el partido
@@ -350,6 +364,158 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Tarjeta de tipo de partido
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.emoji_events, color: AppColors.primary, size: 24),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Tipo de Partido',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => setState(() {
+                            _isFriendly = true;
+                            _selectedTournament = null;
+                          }),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: _isFriendly ? AppColors.primary : Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.handshake,
+                                  color: _isFriendly ? Colors.white : AppColors.textLight,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Amistoso',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: _isFriendly ? Colors.white : AppColors.textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => setState(() => _isFriendly = false),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: !_isFriendly ? AppColors.primary : Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.emoji_events,
+                                  color: !_isFriendly ? Colors.white : AppColors.textLight,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Torneo',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: !_isFriendly ? Colors.white : AppColors.textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  // Selector de torneo
+                  if (!_isFriendly) ...[
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Seleccionar Torneo',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<TournamentEntity>(
+                          isExpanded: true,
+                          value: _selectedTournament,
+                          hint: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(_tournaments.isEmpty 
+                              ? 'No hay torneos disponibles' 
+                              : 'Seleccionar torneo'),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          borderRadius: BorderRadius.circular(12),
+                          items: _tournaments.map<DropdownMenuItem<TournamentEntity>>((tournament) {
+                            return DropdownMenuItem<TournamentEntity>(
+                              value: tournament,
+                              child: Text(tournament.name),
+                            );
+                          }).toList(),
+                          onChanged: _tournaments.isEmpty 
+                            ? null 
+                            : (tournament) => setState(() => _selectedTournament = tournament),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
