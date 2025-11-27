@@ -45,7 +45,11 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
       final teamRepository = TeamRepositoryImpl(remoteDataSource: teamRemoteDataSource);
       final getTeams = GetTeams(repository: teamRepository);
       
-      final tournamentRepository = TournamentRepositoryImpl(remoteDataSource: TournamentRemoteDataSourceImpl());
+      final tournamentRepository = TournamentRepositoryImpl(
+        remoteDataSource: TournamentRemoteDataSourceImpl(
+          supabaseClient: Supabase.instance.client,
+        ),
+      );
       
       final teams = await getTeams.call(userId);
       final tournaments = await tournamentRepository.getTournaments(userId);

@@ -21,7 +21,11 @@ class ScheduleMatchScreen extends StatefulWidget {
 
 class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
   final _teamRepository = TeamRepositoryImpl(remoteDataSource: TeamRemoteDataSourceImpl());
-  final _tournamentRepository = TournamentRepositoryImpl(remoteDataSource: TournamentRemoteDataSourceImpl());
+  final _tournamentRepository = TournamentRepositoryImpl(
+    remoteDataSource: TournamentRemoteDataSourceImpl(
+      supabaseClient: Supabase.instance.client,
+    ),
+  );
   final _matchRepository = MatchRepository();
   
   List<Team> _teams = [];
