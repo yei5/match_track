@@ -7,6 +7,7 @@ import '../../../teams/data/source/team_remote_data_source.dart';
 import '../../data/repository/match_repository.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../../../core/widgets/standard_nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ScheduleMatchScreen extends StatefulWidget {
   const ScheduleMatchScreen({super.key});
@@ -38,7 +39,12 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final teams = await _teamRepository.getTeams('temp-user-id');
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) {
+        throw Exception('Usuario no autenticado');
+      }
+      
+      final teams = await _teamRepository.getTeams(userId);
       
       setState(() {
         _teams = teams;

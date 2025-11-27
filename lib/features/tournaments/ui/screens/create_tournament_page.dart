@@ -7,6 +7,9 @@ import 'package:match_track/core/widgets/custom_button.dart';
 import 'package:match_track/core/widgets/app_header.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:match_track/core/domain/model/team.dart';
+import 'package:match_track/features/teams/data/repository/team_repository_impl.dart';
+import 'package:match_track/features/teams/data/source/team_remote_data_source.dart';
 
 class CreateTournamentPage extends StatefulWidget {
   const CreateTournamentPage({super.key});
@@ -22,6 +25,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
   final Uuid _uuid = const Uuid();
+  final _teamRepository = TeamRepositoryImpl(remoteDataSource: TeamRemoteDataSourceImpl());
 
   final ImagePicker _picker = ImagePicker();
 
@@ -35,8 +39,36 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   final List<String> _categories = ['Masculino', 'Femenino', 'Mixto'];
   final List<String> _statuses = ['Programado', 'En curso', 'Finalizado'];
-  final List<String> _teams = ['Equipo A', 'Equipo B', 'Equipo C', 'Equipo D'];
-  final List<String> _selectedTeams = [];
+  List<Team> _teams = [];
+  final List<String> _selectedTeamIds = [];
+  bool _loadingTeams = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTeams();
+  }
+
+  Future<void> _loadTeams() async {
+    setState(() => _loadingTeams = true);
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId != null) {
+        final teams = await _teamRepository.getTeams(userId);
+        setState(() {
+          _teams = teams;
+          _loadingTeams = false;
+        });
+      }
+    } catch (e) {
+      setState(() => _loadingTeams = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error cargando equipos: $e')),
+        );
+      }
+    }
+  }
 
   Future<void> _pickImage() async {
     try {
@@ -208,18 +240,64 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 12),
-              ..._teams.map((team) {
-                return ListTile(
-                  title: Text(team),
-                  trailing: const Icon(Icons.add_circle_outline),
-                  onTap: () {
-                    if (!_selectedTeams.contains(team)) {
-                      setState(() => _selectedTeams.add(team));
-                    }
-                    Navigator.pop(context);
-                  },
-                );
-              }),
+              if (_loadingTeams)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                )
+              else if (_teams.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const Text('No hay equipos disponibles.'),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, '/createTeam');
+                        },
+                        child: const Text('Crear Equipo'),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    itemCount: _teams.length,
+                    itemBuilder: (context, index) {
+                      final team = _teams[index];
+                      final isSelected = _selectedTeamIds.contains(team.id);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: isSelected ? Colors.green : Colors.blue,
+                          child: Text(
+                            team.name.substring(0, 1).toUpperCase(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        title: Text(team.name),
+                        subtitle: Text(team.category),
+                        trailing: Icon(
+                          isSelected ? Icons.check_circle : Icons.add_circle_outline,
+                          color: isSelected ? Colors.green : Colors.grey,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              _selectedTeamIds.remove(team.id);
+                            } else {
+                              _selectedTeamIds.add(team.id);
+                            }
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
             ],
           ),
         );
@@ -409,27 +487,55 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                             ),
                             const SizedBox(height: 12),
                             Column(
-                              children: _selectedTeams
+                              children: _selectedTeamIds
                                   .map(
-                                    (team) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 4,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.sports_soccer,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            team,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              color: AppColors.textPrimary,
+                                    (teamId) {
+                                      final team = _teams.firstWhere(
+                                        (t) => t.id == teamId,
+                                        orElse: () => Team(
+                                          id: teamId,
+                                          name: 'Equipo',
+                                          description: '',
+                                          sport: '',
+                                          creator_id: '',
+                                          category: '',
+                                        ),
+                                      );
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.sports_soccer,
+                                              color: Colors.grey,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                team.name,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.close, size: 20),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedTeamIds.remove(teamId);
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )
+                                  .toList(),
+                            ),
                                       ),
                                     ),
                                   )

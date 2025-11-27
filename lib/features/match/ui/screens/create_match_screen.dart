@@ -6,6 +6,7 @@ import '../../../../core/domain/model/team.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../domain/models/match_model.dart';
 import 'match_control_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CreateMatchScreen extends StatefulWidget {
   const CreateMatchScreen({super.key});
@@ -29,12 +30,16 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
   Future<void> _loadTeams() async {
     setState(() => _isLoading = true);
     try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) {
+        throw Exception('Usuario no autenticado');
+      }
+      
       final teamRemoteDataSource = TeamRemoteDataSourceImpl();
       final teamRepository = TeamRepositoryImpl(remoteDataSource: teamRemoteDataSource);
       final getTeams = GetTeams(repository: teamRepository);
       
-      // GetTeams requiere userId - usar un ID temporal o vacío
-      final teams = await getTeams.call('temp-user-id');
+      final teams = await getTeams.call(userId);
       setState(() {
         _teams = teams;
         _isLoading = false;
