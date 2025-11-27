@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../domain/models/match_model.dart';
-import '../../domain/models/team_model.dart';
+import '../../../core/domain/model/team.dart';
 import '../../../teams/data/repository/team_repository_impl.dart';
-import '../../../tournaments/domain/models/tournament_model.dart';
-import '../../../tournaments/data/repository/tournament_repository_impl.dart';
+import '../../../teams/data/source/team_remote_data_source.dart';
 import '../../data/repository/match_repository.dart';
 import '../../../../core/theme/app_colors_new.dart';
 
@@ -16,12 +15,10 @@ class ScheduleMatchScreen extends StatefulWidget {
 }
 
 class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
-  final _teamRepository = TeamRepositoryImpl();
-  final _tournamentRepository = TournamentRepositoryImpl();
+  final _teamRepository = TeamRepositoryImpl(remoteDataSource: TeamRemoteDataSourceImpl());
   final _matchRepository = MatchRepository();
   
   List<Team> _teams = [];
-  List<TournamentModel> _tournaments = [];
   bool _isLoading = true;
   
   Team? _selectedHomeTeam;
@@ -29,7 +26,7 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
   String? _selectedTournamentId;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  bool _isFriendly = false;
+  bool _isFriendly = true;
 
   @override
   void initState() {
@@ -41,11 +38,9 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
     setState(() => _isLoading = true);
     try {
       final teams = await _teamRepository.getTeams();
-      final tournaments = await _tournamentRepository.getTournaments();
       
       setState(() {
         _teams = teams;
-        _tournaments = tournaments;
         _isLoading = false;
       });
     } catch (e) {
@@ -120,13 +115,6 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
     if (_selectedHomeTeam!.id == _selectedAwayTeam!.id) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Los equipos deben ser diferentes')),
-      );
-      return;
-    }
-
-    if (!_isFriendly && _selectedTournamentId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona un torneo o marca como amistoso')),
       );
       return;
     }
@@ -355,91 +343,6 @@ class _ScheduleMatchScreenState extends State<ScheduleMatchScreen> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Tarjeta de torneo
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.emoji_events, color: AppColors.primary, size: 24),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Torneo',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Checkbox de Amistoso
-                  CheckboxListTile(
-                    value: _isFriendly,
-                    onChanged: (value) {
-                      setState(() {
-                        _isFriendly = value ?? false;
-                        if (_isFriendly) _selectedTournamentId = null;
-                      });
-                    },
-                    title: const Text(
-                      'Partido Amistoso',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: const Text('No pertenece a ningún torneo'),
-                    activeColor: AppColors.primary,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  
-                  if (!_isFriendly && _tournaments.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: _selectedTournamentId,
-                          hint: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text('Seleccionar torneo'),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          borderRadius: BorderRadius.circular(12),
-                          items: _tournaments.map((tournament) {
-                            return DropdownMenuItem(
-                              value: tournament.id,
-                              child: Text(tournament.name),
-                            );
-                          }).toList(),
-                          onChanged: (id) => setState(() => _selectedTournamentId = id),
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),

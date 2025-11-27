@@ -5,7 +5,6 @@ import '../../../teams/domain/usecases/get_teams.dart';
 import '../../../../core/domain/model/team.dart';
 import '../../../../core/theme/app_colors_new.dart';
 import '../../../match/domain/models/match_model.dart';
-import '../../../match/domain/models/team_model.dart';
 import '../../../match/ui/screens/match_control_screen.dart';
 
 class CreateMatchScreen extends StatefulWidget {
@@ -34,7 +33,8 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
       final teamRepository = TeamRepositoryImpl(remoteDataSource: teamRemoteDataSource);
       final getTeams = GetTeams(repository: teamRepository);
       
-      final teams = await getTeams.call();
+      // GetTeams requiere userId - usar un ID temporal o vacío
+      final teams = await getTeams.call('temp-user-id');
       setState(() {
         _teams = teams;
         _isLoading = false;
@@ -64,22 +64,11 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
       return;
     }
 
-    // Convertir Team a TeamModel
-    final homeTeamModel = TeamModel(
-      id: _homeTeam!.id,
-      name: _homeTeam!.name,
-    );
-
-    final awayTeamModel = TeamModel(
-      id: _awayTeam!.id,
-      name: _awayTeam!.name,
-    );
-
-    // Crear el partido
+    // Crear el partido directamente con Team
     final match = MatchModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      homeTeam: homeTeamModel,
-      awayTeam: awayTeamModel,
+      homeTeam: _homeTeam!,
+      awayTeam: _awayTeam!,
     );
 
     // Navegar a la pantalla de control

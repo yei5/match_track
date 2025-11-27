@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/app_header.dart';
-import '../../../../core/widgets/nav_bar.dart';
+import '../../../../core/widgets/minimizable_nav_bar.dart';
 import '../widgets/profile_content.dart';
 
 class ProfilePage extends StatefulWidget {
